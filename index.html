@@ -2359,11 +2359,16 @@ function calculateFree(saveReport){
   var totalCostKg=materialCostKg+adhesiveCostKg+solventAdhCostKg+inkCostKg+solventInkCostKg+conversion;
   var profit=freeVal("freeProfit");
   var saleKg=totalCostKg*(1+profit/100), costM2=totalCostKg*f/1000, saleM2=saleKg*f/1000;
+  var adhesiveDryKg=areaM2*p.adhesiveDryGsm/1000;
+  var inkDryKg=areaM2*p.inkDryGsm/1000;
   var productName=buildFreeProductName(data.layers);
   var html='<div class="section"><div class="title">نتیجه محاسبه آزاد</div>';
   html+='<div class="small">محصول: <b>'+escapeHtml(productName)+'</b></div>';
   html+='<div class="summary"><div>قیمت تمام‌شده/kg<b>'+fmt(totalCostKg)+'</b></div><div>قیمت فروش/kg<b>'+fmt(saleKg)+'</b></div><div>قیمت تمام‌شده/m²<b>'+fmt(costM2)+'</b></div><div>قیمت فروش/m²<b>'+fmt(saleM2)+'</b></div><div>وزن نهایی<b>'+fmt1(f)+' g/m²</b></div><div>متراژ تولید<b>'+fmt(areaM2)+' m²</b></div></div>';
-  var t1='<table><tr><th>لایه</th><th>جنس</th><th>فی</th><th>g/m²</th><th>%</th><th>ضایعات</th><th>مصرف kg</th><th>ضایعات kg</th><th>سهم/kg</th></tr>'+rows+'</table>';
+  var t1='<table><tr><th>لایه</th><th>جنس</th><th>فی</th><th>g/m²</th><th>%</th><th>ضایعات</th><th>مصرف kg</th><th>ضایعات kg</th><th>سهم/kg</th></tr>'+rows;
+  if(p.adhesiveDryGsm>0){t1+='<tr><td>-</td><td>چسب خشک</td><td>-</td><td>'+fmt1(p.adhesiveDryGsm)+'</td><td>'+fmt1(p.adhesiveDryGsm/f*100)+'%</td><td>-</td><td>'+fmt(adhesiveDryKg)+'</td><td>-</td><td>-</td></tr>';}
+  if(p.inkDryGsm>0){t1+='<tr><td>-</td><td>مرکب خشک</td><td>-</td><td>'+fmt1(p.inkDryGsm)+'</td><td>'+fmt1(p.inkDryGsm/f*100)+'%</td><td>-</td><td>'+fmt(inkDryKg)+'</td><td>-</td><td>-</td></tr>';}
+  t1+='</table>';
   html+=tableWrap(t1);
   var t2='<table><tr><th>بخش هزینه</th><th>تومان/kg</th></tr>'+
   '<tr><td>مواد فیلم</td><td>'+fmt(materialCostKg)+'</td></tr>'+
