@@ -2345,11 +2345,35 @@ function calculateFree(saveReport){
     materialCostTotal+=costTotal;
     rows+='<tr><td>'+y.layer+'</td><td>'+y.mat+fmt1(y.mic).replace(".00","")+'</td><td>'+fmt(effPrice)+'</td><td>'+fmt1(y.gsm)+'</td><td>'+fmt1(y.gsm/f*100)+'%</td><td>'+fmt1(y.waste)+'%</td><td>'+fmt(useKg)+'</td><td>'+fmt(wasteKg)+'</td><td>'+fmt(costKg)+'</td></tr>';
   });
+
   var adhPrice=addPercent(freeVal("freeAdhPrice"),extra), solventPrice=addPercent(freeVal("freeSolventPrice"),extra), inkPrice=addPercent(freeVal("freeInkPrice"),extra);
-  var glueKg=areaM2*p.glueOriginalGsm/1000*(1+freeVal("freeGlueWaste")/100);
-  var solventAdhKg=areaM2*p.solventAdhGsm/1000*(1+freeVal("freeSolventAdhWaste")/100);
-  var inkKg=areaM2*p.inkOriginalGsm/1000*(1+freeVal("freeInkWaste")/100);
-  var solventInkKg=areaM2*p.solventInkGsm/1000*(1+freeVal("freeSolventInkWaste")/100);
+  var glueWaste=freeVal("freeGlueWaste");
+  var solventAdhWaste=freeVal("freeSolventAdhWaste");
+  var inkWaste=freeVal("freeInkWaste");
+  var solventInkWaste=freeVal("freeSolventInkWaste");
+
+  var glueOriginalBaseKg=areaM2*p.glueOriginalGsm/1000;
+  var glueKg=glueOriginalBaseKg*(1+glueWaste/100);
+  var glueWasteKg=glueKg-glueOriginalBaseKg;
+
+  var solventAdhBaseKg=areaM2*p.solventAdhGsm/1000;
+  var solventAdhKg=solventAdhBaseKg*(1+solventAdhWaste/100);
+  var solventAdhWasteKg=solventAdhKg-solventAdhBaseKg;
+
+  var adhesiveDryKg=areaM2*p.adhesiveDryGsm/1000;
+  var adhesiveWetKg=areaM2*p.adhesiveWetGsm/1000;
+
+  var inkOriginalBaseKg=areaM2*p.inkOriginalGsm/1000;
+  var inkKg=inkOriginalBaseKg*(1+inkWaste/100);
+  var inkWasteKg=inkKg-inkOriginalBaseKg;
+
+  var solventInkBaseKg=areaM2*p.solventInkGsm/1000;
+  var solventInkKg=solventInkBaseKg*(1+solventInkWaste/100);
+  var solventInkWasteKg=solventInkKg-solventInkBaseKg;
+
+  var inkWetKg=areaM2*p.inkWetGsm/1000;
+  var inkDryKg=areaM2*p.inkDryGsm/1000;
+
   var materialCostKg=materialCostTotal/gross;
   var adhesiveCostKg=glueKg*adhPrice/gross;
   var solventAdhCostKg=solventAdhKg*solventPrice/gross;
@@ -2359,24 +2383,37 @@ function calculateFree(saveReport){
   var totalCostKg=materialCostKg+adhesiveCostKg+solventAdhCostKg+inkCostKg+solventInkCostKg+conversion;
   var profit=freeVal("freeProfit");
   var saleKg=totalCostKg*(1+profit/100), costM2=totalCostKg*f/1000, saleM2=saleKg*f/1000;
-  var adhesiveDryKg=areaM2*p.adhesiveDryGsm/1000;
-  var inkDryKg=areaM2*p.inkDryGsm/1000;
   var productName=buildFreeProductName(data.layers);
   var html='<div class="section"><div class="title">نتیجه محاسبه آزاد</div>';
   html+='<div class="small">محصول: <b>'+escapeHtml(productName)+'</b></div>';
   html+='<div class="summary"><div>قیمت تمام‌شده/kg<b>'+fmt(totalCostKg)+'</b></div><div>قیمت فروش/kg<b>'+fmt(saleKg)+'</b></div><div>قیمت تمام‌شده/m²<b>'+fmt(costM2)+'</b></div><div>قیمت فروش/m²<b>'+fmt(saleM2)+'</b></div><div>وزن نهایی<b>'+fmt1(f)+' g/m²</b></div><div>متراژ تولید<b>'+fmt(areaM2)+' m²</b></div></div>';
+
   var t1='<table><tr><th>لایه</th><th>جنس</th><th>فی</th><th>g/m²</th><th>%</th><th>ضایعات</th><th>مصرف kg</th><th>ضایعات kg</th><th>سهم/kg</th></tr>'+rows;
-  if(p.adhesiveDryGsm>0){t1+='<tr><td>-</td><td>چسب خشک</td><td>-</td><td>'+fmt1(p.adhesiveDryGsm)+'</td><td>'+fmt1(p.adhesiveDryGsm/f*100)+'%</td><td>-</td><td>'+fmt(adhesiveDryKg)+'</td><td>-</td><td>-</td></tr>';}
-  if(p.inkDryGsm>0){t1+='<tr><td>-</td><td>مرکب خشک</td><td>-</td><td>'+fmt1(p.inkDryGsm)+'</td><td>'+fmt1(p.inkDryGsm/f*100)+'%</td><td>-</td><td>'+fmt(inkDryKg)+'</td><td>-</td><td>-</td></tr>';}
+  t1+='<tr><td>-</td><td>چسب خشک</td><td>-</td><td>'+fmt1(p.adhesiveDryGsm)+'</td><td>'+fmt1(p.adhesiveDryGsm/f*100)+'%</td><td>-</td><td>'+fmt(adhesiveDryKg)+'</td><td>-</td><td>-</td></tr>';
+  t1+='<tr><td>-</td><td>مرکب خشک</td><td>-</td><td>'+fmt1(p.inkDryGsm)+'</td><td>'+fmt1(p.inkDryGsm/f*100)+'%</td><td>-</td><td>'+fmt(inkDryKg)+'</td><td>-</td><td>-</td></tr>';
   t1+='</table>';
   html+=tableWrap(t1);
-  var t2='<table><tr><th>بخش هزینه</th><th>تومان/kg</th></tr>'+
-  '<tr><td>مواد فیلم</td><td>'+fmt(materialCostKg)+'</td></tr>'+
-  '<tr><td>چسب</td><td>'+fmt(adhesiveCostKg)+'</td></tr>'+
-  '<tr><td>حلال چسب</td><td>'+fmt(solventAdhCostKg)+'</td></tr>'+
-  '<tr><td>مرکب</td><td>'+fmt(inkCostKg)+'</td></tr>'+
-  '<tr><td>حلال مرکب</td><td>'+fmt(solventInkCostKg)+'</td></tr>'+
-  '<tr><td>تبدیل و سربار</td><td>'+fmt(conversion)+'</td></tr>'+
+
+  var tProcess='<table>';
+  tProcess+='<tr><th>آیتم</th><th>فی</th><th>g/m²</th><th>Solid نهایی</th><th>ضایعات</th><th>مصرف kg</th><th>ضایعات kg</th><th>هزینه/kg</th></tr>';
+  tProcess+='<tr><td>چسب اورجینال</td><td>'+fmt(adhPrice)+'</td><td>'+fmt1(p.glueOriginalGsm)+'</td><td>-</td><td>'+fmt1(glueWaste)+'%</td><td>'+fmt(glueKg)+'</td><td>'+fmt(glueWasteKg)+'</td><td>'+fmt(adhesiveCostKg)+'</td></tr>';
+  tProcess+='<tr><td>حلال چسب</td><td>'+fmt(solventPrice)+'</td><td>'+fmt1(p.solventAdhGsm)+'</td><td>-</td><td>'+fmt1(solventAdhWaste)+'%</td><td>'+fmt(solventAdhKg)+'</td><td>'+fmt(solventAdhWasteKg)+'</td><td>'+fmt(solventAdhCostKg)+'</td></tr>';
+  tProcess+='<tr><td>چسب آماده</td><td>-</td><td>'+fmt1(p.adhesiveWetGsm)+'</td><td>'+fmt1(p.glueFinalSolid)+'%</td><td>-</td><td>'+fmt(adhesiveWetKg)+'</td><td>-</td><td>'+fmt(adhesiveCostKg+solventAdhCostKg)+'</td></tr>';
+  tProcess+='<tr><td>چسب خشک</td><td>-</td><td>'+fmt1(p.adhesiveDryGsm)+'</td><td>-</td><td>-</td><td>'+fmt(adhesiveDryKg)+'</td><td>-</td><td>-</td></tr>';
+  tProcess+='<tr><td>مرکب اورجینال</td><td>'+fmt(inkPrice)+'</td><td>'+fmt1(p.inkOriginalGsm)+'</td><td>-</td><td>'+fmt1(inkWaste)+'%</td><td>'+fmt(inkKg)+'</td><td>'+fmt(inkWasteKg)+'</td><td>'+fmt(inkCostKg)+'</td></tr>';
+  tProcess+='<tr><td>حلال مرکب</td><td>'+fmt(solventPrice)+'</td><td>'+fmt1(p.solventInkGsm)+'</td><td>-</td><td>'+fmt1(solventInkWaste)+'%</td><td>'+fmt(solventInkKg)+'</td><td>'+fmt(solventInkWasteKg)+'</td><td>'+fmt(solventInkCostKg)+'</td></tr>';
+  tProcess+='<tr><td>مرکب آماده</td><td>-</td><td>'+fmt1(p.inkWetGsm)+'</td><td>'+fmt1(p.inkFinalSolid)+'%</td><td>-</td><td>'+fmt(inkWetKg)+'</td><td>-</td><td>'+fmt(inkCostKg+solventInkCostKg)+'</td></tr>';
+  tProcess+='<tr><td>مرکب خشک</td><td>-</td><td>'+fmt1(p.inkDryGsm)+'</td><td>-</td><td>-</td><td>'+fmt(inkDryKg)+'</td><td>-</td><td>-</td></tr>';
+  tProcess+='</table>';
+  html+=tableWrap(tProcess);
+
+  var t2='<table><tr><th>بخش هزینه</th><th>تومان/kg</th></tr>'+ 
+  '<tr><td>مواد فیلم</td><td>'+fmt(materialCostKg)+'</td></tr>'+ 
+  '<tr><td>چسب اورجینال</td><td>'+fmt(adhesiveCostKg)+'</td></tr>'+ 
+  '<tr><td>حلال چسب</td><td>'+fmt(solventAdhCostKg)+'</td></tr>'+ 
+  '<tr><td>مرکب اورجینال</td><td>'+fmt(inkCostKg)+'</td></tr>'+ 
+  '<tr><td>حلال مرکب</td><td>'+fmt(solventInkCostKg)+'</td></tr>'+ 
+  '<tr><td>تبدیل و سربار</td><td>'+fmt(conversion)+'</td></tr>'+ 
   '<tr><td><b>جمع تمام‌شده</b></td><td><b>'+fmt(totalCostKg)+'</b></td></tr></table>';
   html+=tableWrap(t2);
   html+='<div class="grid no-print"><button type="button" onclick="saveFreeReportFromCurrent()">ذخیره این گزارش</button><button type="button" class="gray" onclick="printFreeCurrent()">چاپ / PDF همین گزارش</button></div>';
