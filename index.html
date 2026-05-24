@@ -231,11 +231,18 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 </div>
 
 <div class="section">
+<div class="title">نوع چسب لمینت</div>
+<div class="small">برای هر پاس لمینت نوع چسب را انتخاب کن. پیش‌فرض همه پاس‌ها حلالی است تا محصولات قبلی تغییر نکنند.</div>
+<div id="laminationTypes"></div>
+</div>
+
+<div class="section">
 <div class="title">۲. قیمت چسب و حلال</div>
 
 <div class="grid">
 <div><label>قیمت چسب اورجینال، تومان/کیلو</label><input id="adhPrice" type="text" value="1,000,000" oninput="formatInput(this)"></div>
 <div><label>قیمت حلال، تومان/کیلو</label><input id="solventPrice" type="text" value="80,000" oninput="formatInput(this)"></div>
+<div class="full"><label>قیمت چسب غیرحلالی، تومان/کیلو</label><input id="slAdhPrice" type="text" value="0" oninput="formatInput(this)"></div>
 </div>
 </div>
 
@@ -323,6 +330,12 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 </div>
 
 <div class="section">
+<div class="title">نوع چسب لمینت آزاد</div>
+<div class="small">برای هر پاس لمینت نوع چسب را انتخاب کن. پیش‌فرض حلالی است.</div>
+<div id="freeLaminationTypes"></div>
+</div>
+
+<div class="section">
 <div class="title">۲. تنظیمات آزاد چسب، مرکب و هزینه‌ها</div>
 <div class="grid">
 <div><label>مقدار تولید مبنا، kg</label><input id="freeTargetKg" type="text" value="1,000" oninput="formatInput(this)"></div>
@@ -336,6 +349,10 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 <div><label>نسبت حلال چسب</label><input id="freeGlueSolventRatio" type="text" value="1" oninput="formatInput(this)"></div>
 <div><label>ضایعات چسب، %</label><input id="freeGlueWaste" type="text" value="4" oninput="formatInput(this)"></div>
 <div><label>ضایعات حلال چسب، %</label><input id="freeSolventAdhWaste" type="text" value="4" oninput="formatInput(this)"></div>
+
+<div><label>چسب غیرحلالی خشک هر پاس g/m²</label><input id="freeSlGlueDryPerLam" type="text" value="2.3" oninput="formatInput(this)"></div>
+<div><label>قیمت چسب غیرحلالی، تومان/kg</label><input id="freeSlAdhPrice" type="text" value="0" oninput="formatInput(this)"></div>
+<div><label>ضایعات چسب غیرحلالی، %</label><input id="freeSlGlueWaste" type="text" value="4" oninput="formatInput(this)"></div>
 
 <div><label>مرکب خشک g/m²</label><input id="freeInkDry" type="text" value="3" oninput="formatInput(this)"></div>
 <div><label>Solid مرکب، %</label><input id="freeInkSolid" type="text" value="50" oninput="formatInput(this)"></div>
@@ -465,6 +482,15 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 </div>
 
 <div class="section">
+<div class="title">تنظیمات مدیر - چسب غیرحلالی</div>
+<div class="grid">
+<div><label>چسب غیرحلالی خشک روی کار هر پاس g/m²</label><input id="slGlueDryPerLam" type="text" value="2.3" oninput="formatInput(this)"></div>
+<div><label>ضایعات چسب غیرحلالی %</label><input id="slGlueWaste" type="text" value="4" oninput="formatInput(this)"></div>
+</div>
+<div class="small">قیمت چسب غیرحلالی در بخش قیمت چسب و حلال وارد می‌شود. اگر پاس لمینت را غیرحلالی انتخاب کنی، حلال چسب برای همان پاس صفر حساب می‌شود.</div>
+</div>
+
+<div class="section">
 <div class="title">تنظیمات مدیر - مرکب و حلال مرکب</div>
 <div class="grid">
 <div><label>مرکب خشک روی کار g/m²</label><input id="inkDryInput" type="text" value="3" oninput="formatInput(this)"></div>
@@ -584,7 +610,7 @@ let dbReady = false;
 
 const settingMap = {
   extraPercent:"extra_percent", profit:"profit", glueDryPerLam:"glue_dry_per_lam", glueOriginalSolid:"glue_solid",
-  glueRatio:"glue_ratio", glueSolventRatio:"glue_solvent_ratio", glueWaste:"glue_waste", solventAdhWaste:"solvent_adh_waste",
+  glueRatio:"glue_ratio", glueSolventRatio:"glue_solvent_ratio", glueWaste:"glue_waste", solventAdhWaste:"solvent_adh_waste", slGlueDryPerLam:"sl_glue_dry_per_lam", slGlueWaste:"sl_glue_waste",
   inkDryInput:"ink_dry", inkOriginalSolid:"ink_solid", printArea:"print_area", inkRatio:"ink_ratio", inkSolventRatio:"ink_solvent_ratio",
   inkWaste:"ink_waste", solventInkWaste:"solvent_ink_waste", printCost:"print_cost", lamCost:"lam_cost", cutCost:"cut_cost", overhead:"overhead"
 };
@@ -908,6 +934,30 @@ sel.innerHTML=html;
 if(old && sel.querySelector('option[value="'+old+'"]')){sel.value=old}
 }
 
+
+function renderLaminationTypes(){
+var box=document.getElementById("laminationTypes");
+if(!box)return;
+var n=clean(document.getElementById("layerCount")?document.getElementById("layerCount").value:3)||3;
+var old={};
+for(var i=1;i<n;i++){var e=document.getElementById("lamType"+i); if(e)old[i]=e.value;}
+var html="";
+for(var i=1;i<n;i++){
+  var mat1=document.getElementById("mat"+i)?.value || ("لایه "+i);
+  var mic1=clean(document.getElementById("mic"+i)?.value);
+  var mat2=document.getElementById("mat"+(i+1))?.value || ("لایه "+(i+1));
+  var mic2=clean(document.getElementById("mic"+(i+1))?.value);
+  var label=(mat1+(mic1?fmt1(mic1).replace(".00",""):""))+" ← "+(mat2+(mic2?fmt1(mic2).replace(".00",""):""));
+  var val=old[i] || localStorage.getItem("tak_lamType"+i) || "solvent";
+  html+='<div class="card"><label>پاس '+i+' ('+label+')</label><select id="lamType'+i+'" onchange="saveForm(); analyze()">';
+  html+='<option value="solvent" '+(val!=="solventless"?'selected':'')+'>حلالی</option>';
+  html+='<option value="solventless" '+(val==="solventless"?'selected':'')+'>غیرحلالی</option>';
+  html+='</select></div>';
+}
+box.innerHTML=html;
+}
+function getLaminationType(i){var el=document.getElementById("lamType"+i); return el && el.value ? el.value : "solvent";}
+
 function makeLayers(){
 var n=clean(document.getElementById("layerCount").value);
 var html="";
@@ -933,6 +983,7 @@ document.getElementById("analysis").innerHTML="";
 document.getElementById("result").innerHTML="";
 
 loadForm(true);
+renderLaminationTypes();
 applyMasterPricesToCurrentLayers();
 renderFamilyLayerOptions();
 }
@@ -987,11 +1038,26 @@ var glueDryPerLam=clean(document.getElementById("glueDryPerLam").value);
 var glueOriginalSolid=clean(document.getElementById("glueOriginalSolid").value)||75;
 var glueRatio=clean(document.getElementById("glueRatio").value)||1;
 var glueSolventRatio=clean(document.getElementById("glueSolventRatio").value)||0;
+var slGlueDryPerLam=clean(document.getElementById("slGlueDryPerLam")?.value)||0;
 
-var adhesiveDryGsm=glueDryPerLam*lamPass;
-var glueOriginalGsm=adhesiveDryGsm/(glueOriginalSolid/100);
+var solventDryGsm=0;
+var solventlessDryGsm=0;
+var solventPass=0;
+var solventlessPass=0;
+for(var i=1;i<layerCount;i++){
+  if(getLaminationType(i)==="solventless"){
+    solventlessPass++;
+    solventlessDryGsm+=slGlueDryPerLam;
+  }else{
+    solventPass++;
+    solventDryGsm+=glueDryPerLam;
+  }
+}
+var glueOriginalGsm=solventDryGsm/(glueOriginalSolid/100);
 var solventAdhGsm=glueOriginalGsm*(glueSolventRatio/glueRatio);
-var adhesiveWetGsm=glueOriginalGsm+solventAdhGsm;
+var slGlueOriginalGsm=solventlessDryGsm;
+var adhesiveDryGsm=solventDryGsm+solventlessDryGsm;
+var adhesiveWetGsm=glueOriginalGsm+solventAdhGsm+slGlueOriginalGsm;
 var glueFinalSolid=adhesiveWetGsm>0 ? adhesiveDryGsm/adhesiveWetGsm*100 : 0;
 
 var inkDryInput=clean(document.getElementById("inkDryInput").value);
@@ -1009,21 +1075,7 @@ var inkWetGsm=inkOriginalGsm+solventInkGsm;
 var inkFinalSolid=inkWetGsm>0 ? inkDryGsm/inkWetGsm*100 : 0;
 
 var finalGsm=filmGsm+adhesiveDryGsm+inkDryGsm;
-
-return{
-lamPass:lamPass,
-glueOriginalGsm:glueOriginalGsm,
-solventAdhGsm:solventAdhGsm,
-adhesiveWetGsm:adhesiveWetGsm,
-adhesiveDryGsm:adhesiveDryGsm,
-glueFinalSolid:glueFinalSolid,
-inkOriginalGsm:inkOriginalGsm,
-solventInkGsm:solventInkGsm,
-inkWetGsm:inkWetGsm,
-inkDryGsm:inkDryGsm,
-inkFinalSolid:inkFinalSolid,
-finalGsm:finalGsm
-};
+return{lamPass:lamPass,solventPass:solventPass,solventlessPass:solventlessPass,solventDryGsm:solventDryGsm,solventlessDryGsm:solventlessDryGsm,glueOriginalGsm:glueOriginalGsm,solventAdhGsm:solventAdhGsm,slGlueOriginalGsm:slGlueOriginalGsm,adhesiveWetGsm:adhesiveWetGsm,adhesiveDryGsm:adhesiveDryGsm,glueFinalSolid:glueFinalSolid,inkOriginalGsm:inkOriginalGsm,solventInkGsm:solventInkGsm,inkWetGsm:inkWetGsm,inkDryGsm:inkDryGsm,inkFinalSolid:inkFinalSolid,finalGsm:finalGsm};
 }
 
 function buildProductName(){
@@ -1049,9 +1101,9 @@ localStorage.setItem("tak_products",JSON.stringify(products));
 
 
 var globalSettingIds=[
-"adhPrice","solventPrice","inkPrice",
+"adhPrice","solventPrice","slAdhPrice","inkPrice",
 "extraPercent","profit",
-"glueDryPerLam","glueOriginalSolid","glueRatio","glueSolventRatio","glueWaste","solventAdhWaste",
+"glueDryPerLam","glueOriginalSolid","glueRatio","glueSolventRatio","glueWaste","solventAdhWaste","slGlueDryPerLam","slGlueWaste",
 "inkDryInput","inkOriginalSolid","printArea","inkRatio","inkSolventRatio","inkWaste","solventInkWaste",
 "printCost","lamCost","cutCost","overhead"
 ];
@@ -1606,9 +1658,16 @@ var glueDryPerLam=clean(getSettingValue("glueDryPerLam",data));
 var glueOriginalSolid=clean(getSettingValue("glueOriginalSolid",data))||75;
 var glueRatio=clean(getSettingValue("glueRatio",data))||1;
 var glueSolventRatio=clean(getSettingValue("glueSolventRatio",data))||0;
-var adhesiveDryGsm=glueDryPerLam*lamPass;
-var glueOriginalGsm=adhesiveDryGsm/(glueOriginalSolid/100);
+var slGlueDryPerLam=clean(getSettingValue("slGlueDryPerLam",data));
+var solventDryGsm=0, solventlessDryGsm=0;
+for(var lp=1;lp<n;lp++){
+  var lt=data["lamType"+lp]||"solvent";
+  if(lt==="solventless"){solventlessDryGsm+=slGlueDryPerLam;}else{solventDryGsm+=glueDryPerLam;}
+}
+var adhesiveDryGsm=solventDryGsm+solventlessDryGsm;
+var glueOriginalGsm=solventDryGsm/(glueOriginalSolid/100);
 var solventAdhGsm=glueOriginalGsm*(glueSolventRatio/glueRatio);
+var slGlueOriginalGsm=solventlessDryGsm;
 
 var inkDryInput=clean(getSettingValue("inkDryInput",data));
 var printAreaRaw=clean(getSettingValue("printArea",data));
@@ -1627,6 +1686,7 @@ var areaM2=gross*1000/finalGsm;
 var extraPercent=clean(getSettingValue("extraPercent",data));
 var adhPrice=addPercent(clean(getSettingValue("adhPrice",data)),extraPercent);
 var solventPrice=addPercent(clean(getSettingValue("solventPrice",data)),extraPercent);
+var slAdhPrice=addPercent(clean(getSettingValue("slAdhPrice",data)),extraPercent);
 var inkPrice=addPercent(clean(getSettingValue("inkPrice",data)),extraPercent);
 var materialCostTotal=0;
 for(var j=0;j<layers.length;j++){
@@ -1636,14 +1696,16 @@ materialCostTotal+=useKg*addPercent(y.price,extraPercent);
 }
 var glueWaste=clean(getSettingValue("glueWaste",data));
 var solventAdhWaste=clean(getSettingValue("solventAdhWaste",data));
+var slGlueWaste=clean(getSettingValue("slGlueWaste",data));
 var inkWaste=clean(getSettingValue("inkWaste",data));
 var solventInkWaste=clean(getSettingValue("solventInkWaste",data));
 var glueOriginalKg=(areaM2*glueOriginalGsm/1000)*(1+glueWaste/100);
 var solventAdhKg=(areaM2*solventAdhGsm/1000)*(1+solventAdhWaste/100);
+var solventlessKg=(areaM2*slGlueOriginalGsm/1000)*(1+slGlueWaste/100);
 var inkOriginalKg=(areaM2*inkOriginalGsm/1000)*(1+inkWaste/100);
 var solventInkKg=(areaM2*solventInkGsm/1000)*(1+solventInkWaste/100);
 var materialCostKg=materialCostTotal/gross;
-var adhesiveCostKg=glueOriginalKg*adhPrice/gross;
+var adhesiveCostKg=(glueOriginalKg*adhPrice+solventlessKg*slAdhPrice)/gross;
 var solventAdhCostKg=solventAdhKg*solventPrice/gross;
 var inkCostKg=inkOriginalKg*inkPrice/gross;
 var solventInkCostKg=solventInkKg*solventPrice/gross;
@@ -2004,6 +2066,7 @@ t2+='<tr><th>آیتم</th><th>g/m²</th><th>توضیح</th></tr>';
 t2+='<tr><td>چسب خشک روی کار</td><td>'+fmt1(p.adhesiveDryGsm)+'</td><td>چسب خشک هر لمینت × تعداد لمینت</td></tr>';
 t2+='<tr><td>چسب اورجینال</td><td>'+fmt1(p.glueOriginalGsm)+'</td><td>بر اساس Solid اورجینال</td></tr>';
 t2+='<tr><td>حلال چسب</td><td>'+fmt1(p.solventAdhGsm)+'</td><td>بر اساس نسبت ترکیب</td></tr>';
+if((p.slGlueOriginalGsm||0)>0){t2+='<tr><td>چسب غیرحلالی</td><td>'+fmt1(p.slGlueOriginalGsm)+'</td><td>'+fmt(p.solventlessPass||0)+' پاس بدون حلال</td></tr>';}
 t2+='<tr><td>چسب آماده مصرف</td><td>'+fmt1(p.adhesiveWetGsm)+'</td><td>چسب اورجینال + حلال</td></tr>';
 t2+='<tr><td>Solid نهایی چسب آماده</td><td>'+fmt1(p.glueFinalSolid)+'%</td><td>چسب خشک ÷ چسب آماده</td></tr>';
 
@@ -2073,10 +2136,12 @@ var extraPercent=clean(document.getElementById("extraPercent").value);
 
 var adhPrice=addPercent(clean(document.getElementById("adhPrice").value),extraPercent);
 var solventPrice=addPercent(clean(document.getElementById("solventPrice").value),extraPercent);
+var slAdhPrice=addPercent(clean(document.getElementById("slAdhPrice")?.value),extraPercent);
 var inkPrice=addPercent(clean(document.getElementById("inkPrice").value),extraPercent);
 
 var glueWaste=clean(document.getElementById("glueWaste").value);
 var solventAdhWaste=clean(document.getElementById("solventAdhWaste").value);
+var slGlueWaste=clean(document.getElementById("slGlueWaste")?.value);
 var inkWaste=clean(document.getElementById("inkWaste").value);
 var solventInkWaste=clean(document.getElementById("solventInkWaste").value);
 
@@ -2121,6 +2186,9 @@ var solventAdhKg=solventAdhBaseKg*(1+solventAdhWaste/100);
 var solventAdhWasteKg=solventAdhKg-solventAdhBaseKg;
 
 var adhesiveDryKg=areaM2*p.adhesiveDryGsm/1000;
+var solventlessBaseKg=areaM2*(p.slGlueOriginalGsm||0)/1000;
+var solventlessKg=solventlessBaseKg*(1+slGlueWaste/100);
+var solventlessWasteKg=solventlessKg-solventlessBaseKg;
 var adhesiveWetKg=areaM2*p.adhesiveWetGsm/1000;
 
 var inkOriginalBaseKg=areaM2*p.inkOriginalGsm/1000;
@@ -2135,12 +2203,14 @@ var inkWetKg=areaM2*p.inkWetGsm/1000;
 var inkDryKg=areaM2*p.inkDryGsm/1000;
 
 var glueCostTotal=glueOriginalKg*adhPrice;
+var solventlessCostTotal=solventlessKg*slAdhPrice;
 var solventAdhCostTotal=solventAdhKg*solventPrice;
 var inkCostTotal=inkOriginalKg*inkPrice;
 var solventInkCostTotal=solventInkKg*solventPrice;
 
 var materialCostKg=materialCostTotal/gross;
-var adhesiveCostKg=glueCostTotal/gross;
+var adhesiveCostKg=(glueCostTotal+solventlessCostTotal)/gross;
+var solventlessCostKg=solventlessCostTotal/gross;
 var solventAdhCostKg=solventAdhCostTotal/gross;
 var inkCostKg=inkCostTotal/gross;
 var solventInkCostKg=solventInkCostTotal/gross;
@@ -2224,6 +2294,7 @@ t2+='<tr><th>آیتم</th><th>فی</th><th>g/m²</th><th>Solid نهایی</th><t
 
 t2+='<tr><td>چسب اورجینال</td><td>'+fmt(adhPrice)+'</td><td>'+fmt1(p.glueOriginalGsm)+'</td><td>-</td><td>'+fmt1(glueWaste)+'%</td><td>'+fmt(glueOriginalKg)+'</td><td>'+fmt(glueWasteKg)+'</td><td>'+fmt(adhesiveCostKg)+'</td></tr>';
 t2+='<tr><td>حلال چسب</td><td>'+fmt(solventPrice)+'</td><td>'+fmt1(p.solventAdhGsm)+'</td><td>-</td><td>'+fmt1(solventAdhWaste)+'%</td><td>'+fmt(solventAdhKg)+'</td><td>'+fmt(solventAdhWasteKg)+'</td><td>'+fmt(solventAdhCostKg)+'</td></tr>';
+if((p.slGlueOriginalGsm||0)>0){t2+='<tr><td>چسب غیرحلالی</td><td>'+fmt(slAdhPrice)+'</td><td>'+fmt1(p.slGlueOriginalGsm)+'</td><td>100%</td><td>'+fmt1(slGlueWaste)+'%</td><td>'+fmt(solventlessKg)+'</td><td>'+fmt(solventlessWasteKg)+'</td><td>'+fmt(solventlessCostKg)+'</td></tr>';}
 t2+='<tr><td>چسب آماده</td><td>-</td><td>'+fmt1(p.adhesiveWetGsm)+'</td><td>'+fmt1(p.glueFinalSolid)+'%</td><td>-</td><td>'+fmt(adhesiveWetKg)+'</td><td>-</td><td>'+fmt(adhesiveCostKg+solventAdhCostKg)+'</td></tr>';
 t2+='<tr><td>چسب خشک</td><td>-</td><td>'+fmt1(p.adhesiveDryGsm)+'</td><td>-</td><td>-</td><td>'+fmt(adhesiveDryKg)+'</td><td>-</td><td>-</td></tr>';
 
@@ -2240,6 +2311,7 @@ t3+='<tr><th>بخش هزینه</th><th>تومان / کیلو محصول</th></tr
 t3+='<tr><td>مواد فیلم</td><td>'+fmt(materialCostKg)+'</td></tr>';
 t3+='<tr><td>چسب اورجینال</td><td>'+fmt(adhesiveCostKg)+'</td></tr>';
 t3+='<tr><td>حلال چسب</td><td>'+fmt(solventAdhCostKg)+'</td></tr>';
+if((p.slGlueOriginalGsm||0)>0){t3+='<tr><td>چسب غیرحلالی</td><td>'+fmt(solventlessCostKg)+'</td></tr>';}
 t3+='<tr><td>مرکب اورجینال</td><td>'+fmt(inkCostKg)+'</td></tr>';
 t3+='<tr><td>حلال مرکب</td><td>'+fmt(solventInkCostKg)+'</td></tr>';
 t3+='<tr><td>تبدیل و سربار</td><td>'+fmt(conversion)+'</td></tr>';
@@ -2272,7 +2344,7 @@ function loadFreeDefaultsOnce(){if(freeDefaultsLoaded)return; freeDefaultsLoaded
 function loadFreeDefaultsFromMain(showMsg){
   var map={
     freeExtraPercent:"extraPercent",freeProfit:"profit",freePrintArea:"printArea",
-    freeGlueDryPerLam:"glueDryPerLam",freeGlueSolid:"glueOriginalSolid",freeGlueRatio:"glueRatio",freeGlueSolventRatio:"glueSolventRatio",freeGlueWaste:"glueWaste",freeSolventAdhWaste:"solventAdhWaste",
+    freeGlueDryPerLam:"glueDryPerLam",freeGlueSolid:"glueOriginalSolid",freeGlueRatio:"glueRatio",freeGlueSolventRatio:"glueSolventRatio",freeGlueWaste:"glueWaste",freeSolventAdhWaste:"solventAdhWaste",freeSlGlueDryPerLam:"slGlueDryPerLam",freeSlAdhPrice:"slAdhPrice",freeSlGlueWaste:"slGlueWaste",
     freeInkDry:"inkDryInput",freeInkSolid:"inkOriginalSolid",freeInkRatio:"inkRatio",freeInkSolventRatio:"inkSolventRatio",freeInkWaste:"inkWaste",freeSolventInkWaste:"solventInkWaste",
     freeAdhPrice:"adhPrice",freeSolventPrice:"solventPrice",freeInkPrice:"inkPrice",freePrintCost:"printCost",freeLamCost:"lamCost",freeCutCost:"cutCost",freeOverhead:"overhead"
   };
@@ -2280,6 +2352,28 @@ function loadFreeDefaultsFromMain(showMsg){
   makeFreeLayers();
   if(showMsg!==false)alert("تنظیمات فعلی داخل محاسبه آزاد کپی شد. از اینجا به بعد مستقل است.");
 }
+
+function renderFreeLaminationTypes(){
+  var box=document.getElementById("freeLaminationTypes"); if(!box)return;
+  var n=freeVal("freeLayerCount")||3;
+  var old={}; for(var i=1;i<n;i++){var e=document.getElementById("freeLamType"+i); if(e)old[i]=e.value;}
+  var html="";
+  for(var i=1;i<n;i++){
+    var mat1=document.getElementById("freeMat"+i)?.value || ("لایه "+i);
+    var mic1=freeVal("freeMic"+i);
+    var mat2=document.getElementById("freeMat"+(i+1))?.value || ("لایه "+(i+1));
+    var mic2=freeVal("freeMic"+(i+1));
+    var label=(mat1+(mic1?fmt1(mic1).replace(".00",""):""))+" ← "+(mat2+(mic2?fmt1(mic2).replace(".00",""):""));
+    var val=old[i] || localStorage.getItem("tak_freeLamType"+i) || "solvent";
+    html+='<div class="card"><label>پاس '+i+' ('+label+')</label><select id="freeLamType'+i+'" onchange="saveForm()">';
+    html+='<option value="solvent" '+(val!=="solventless"?'selected':'')+'>حلالی</option>';
+    html+='<option value="solventless" '+(val==="solventless"?'selected':'')+'>غیرحلالی</option>';
+    html+='</select></div>';
+  }
+  box.innerHTML=html;
+}
+function getFreeLaminationType(i){var el=document.getElementById("freeLamType"+i); return el&&el.value?el.value:"solvent";}
+
 function makeFreeLayers(){
   var box=document.getElementById("freeLayers"); if(!box)return;
   var n=freeVal("freeLayerCount")||3;
@@ -2298,6 +2392,7 @@ function makeFreeLayers(){
     html+='</div></div>';
   }
   box.innerHTML=html;
+  renderFreeLaminationTypes();
 }
 function applyFreeMaterialPrice(i){
   var mat=document.getElementById("freeMat"+i); var price=document.getElementById("freePrice"+i);
@@ -2322,17 +2417,25 @@ function getFreeProcess(filmGsm){
   var layerCount=freeVal("freeLayerCount")||3;
   var lamPass=Math.max(layerCount-1,1);
   var glueDry=freeVal("freeGlueDryPerLam"), glueSolid=freeVal("freeGlueSolid")||75, glueRatio=freeVal("freeGlueRatio")||1, glueSolventRatio=freeVal("freeGlueSolventRatio")||0;
-  var adhesiveDryGsm=glueDry*lamPass;
-  var glueOriginalGsm=adhesiveDryGsm/(glueSolid/100);
+  var slGlueDry=freeVal("freeSlGlueDryPerLam");
+  var solventDryGsm=0, solventlessDryGsm=0, solventPass=0, solventlessPass=0;
+  for(var i=1;i<layerCount;i++){
+    if(getFreeLaminationType(i)==="solventless"){solventlessPass++; solventlessDryGsm+=slGlueDry;}
+    else{solventPass++; solventDryGsm+=glueDry;}
+  }
+  var adhesiveDryGsm=solventDryGsm+solventlessDryGsm;
+  var glueOriginalGsm=solventDryGsm/(glueSolid/100);
   var solventAdhGsm=glueOriginalGsm*(glueSolventRatio/glueRatio);
-  var adhesiveWetGsm=glueOriginalGsm+solventAdhGsm;
+  var slGlueOriginalGsm=solventlessDryGsm;
+  var adhesiveWetGsm=glueOriginalGsm+solventAdhGsm+slGlueOriginalGsm;
   var inkDryGsm=freeVal("freeInkDry")*(freeVal("freePrintArea")/100);
   var inkSolid=freeVal("freeInkSolid")||50, inkRatio=freeVal("freeInkRatio")||1, inkSolventRatio=freeVal("freeInkSolventRatio")||0;
   var inkOriginalGsm=inkDryGsm/(inkSolid/100);
   var solventInkGsm=inkOriginalGsm*(inkSolventRatio/inkRatio);
   var inkWetGsm=inkOriginalGsm+solventInkGsm;
-  return {lamPass:lamPass,adhesiveDryGsm:adhesiveDryGsm,glueOriginalGsm:glueOriginalGsm,solventAdhGsm:solventAdhGsm,adhesiveWetGsm:adhesiveWetGsm,inkDryGsm:inkDryGsm,inkOriginalGsm:inkOriginalGsm,solventInkGsm:solventInkGsm,inkWetGsm:inkWetGsm,finalGsm:filmGsm+adhesiveDryGsm+inkDryGsm};
+  return {lamPass:lamPass,solventPass:solventPass,solventlessPass:solventlessPass,solventDryGsm:solventDryGsm,solventlessDryGsm:solventlessDryGsm,adhesiveDryGsm:adhesiveDryGsm,glueOriginalGsm:glueOriginalGsm,solventAdhGsm:solventAdhGsm,slGlueOriginalGsm:slGlueOriginalGsm,adhesiveWetGsm:adhesiveWetGsm,inkDryGsm:inkDryGsm,inkOriginalGsm:inkOriginalGsm,solventInkGsm:solventInkGsm,inkWetGsm:inkWetGsm,finalGsm:filmGsm+adhesiveDryGsm+inkDryGsm};
 }
+
 function buildFreeProductName(layers){return layers.map(function(x){return x.mat+fmt1(x.mic).replace(".00","").replace(".0","");}).join(" / ");}
 function calculateFree(saveReport){
   var data=getFreeLayers(); if(!data)return;
@@ -2345,37 +2448,14 @@ function calculateFree(saveReport){
     materialCostTotal+=costTotal;
     rows+='<tr><td>'+y.layer+'</td><td>'+y.mat+fmt1(y.mic).replace(".00","")+'</td><td>'+fmt(effPrice)+'</td><td>'+fmt1(y.gsm)+'</td><td>'+fmt1(y.gsm/f*100)+'%</td><td>'+fmt1(y.waste)+'%</td><td>'+fmt(useKg)+'</td><td>'+fmt(wasteKg)+'</td><td>'+fmt(costKg)+'</td></tr>';
   });
-
-  var adhPrice=addPercent(freeVal("freeAdhPrice"),extra), solventPrice=addPercent(freeVal("freeSolventPrice"),extra), inkPrice=addPercent(freeVal("freeInkPrice"),extra);
-  var glueWaste=freeVal("freeGlueWaste");
-  var solventAdhWaste=freeVal("freeSolventAdhWaste");
-  var inkWaste=freeVal("freeInkWaste");
-  var solventInkWaste=freeVal("freeSolventInkWaste");
-
-  var glueOriginalBaseKg=areaM2*p.glueOriginalGsm/1000;
-  var glueKg=glueOriginalBaseKg*(1+glueWaste/100);
-  var glueWasteKg=glueKg-glueOriginalBaseKg;
-
-  var solventAdhBaseKg=areaM2*p.solventAdhGsm/1000;
-  var solventAdhKg=solventAdhBaseKg*(1+solventAdhWaste/100);
-  var solventAdhWasteKg=solventAdhKg-solventAdhBaseKg;
-
-  var adhesiveDryKg=areaM2*p.adhesiveDryGsm/1000;
-  var adhesiveWetKg=areaM2*p.adhesiveWetGsm/1000;
-
-  var inkOriginalBaseKg=areaM2*p.inkOriginalGsm/1000;
-  var inkKg=inkOriginalBaseKg*(1+inkWaste/100);
-  var inkWasteKg=inkKg-inkOriginalBaseKg;
-
-  var solventInkBaseKg=areaM2*p.solventInkGsm/1000;
-  var solventInkKg=solventInkBaseKg*(1+solventInkWaste/100);
-  var solventInkWasteKg=solventInkKg-solventInkBaseKg;
-
-  var inkWetKg=areaM2*p.inkWetGsm/1000;
-  var inkDryKg=areaM2*p.inkDryGsm/1000;
-
+  var adhPrice=addPercent(freeVal("freeAdhPrice"),extra), solventPrice=addPercent(freeVal("freeSolventPrice"),extra), slAdhPrice=addPercent(freeVal("freeSlAdhPrice"),extra), inkPrice=addPercent(freeVal("freeInkPrice"),extra);
+  var glueKg=areaM2*p.glueOriginalGsm/1000*(1+freeVal("freeGlueWaste")/100);
+  var solventAdhKg=areaM2*p.solventAdhGsm/1000*(1+freeVal("freeSolventAdhWaste")/100);
+  var solventlessKg=areaM2*(p.slGlueOriginalGsm||0)/1000*(1+freeVal("freeSlGlueWaste")/100);
+  var inkKg=areaM2*p.inkOriginalGsm/1000*(1+freeVal("freeInkWaste")/100);
+  var solventInkKg=areaM2*p.solventInkGsm/1000*(1+freeVal("freeSolventInkWaste")/100);
   var materialCostKg=materialCostTotal/gross;
-  var adhesiveCostKg=glueKg*adhPrice/gross;
+  var adhesiveCostKg=(glueKg*adhPrice+solventlessKg*slAdhPrice)/gross;
   var solventAdhCostKg=solventAdhKg*solventPrice/gross;
   var inkCostKg=inkKg*inkPrice/gross;
   var solventInkCostKg=solventInkKg*solventPrice/gross;
@@ -2387,33 +2467,16 @@ function calculateFree(saveReport){
   var html='<div class="section"><div class="title">نتیجه محاسبه آزاد</div>';
   html+='<div class="small">محصول: <b>'+escapeHtml(productName)+'</b></div>';
   html+='<div class="summary"><div>قیمت تمام‌شده/kg<b>'+fmt(totalCostKg)+'</b></div><div>قیمت فروش/kg<b>'+fmt(saleKg)+'</b></div><div>قیمت تمام‌شده/m²<b>'+fmt(costM2)+'</b></div><div>قیمت فروش/m²<b>'+fmt(saleM2)+'</b></div><div>وزن نهایی<b>'+fmt1(f)+' g/m²</b></div><div>متراژ تولید<b>'+fmt(areaM2)+' m²</b></div></div>';
-
-  var t1='<table><tr><th>لایه</th><th>جنس</th><th>فی</th><th>g/m²</th><th>%</th><th>ضایعات</th><th>مصرف kg</th><th>ضایعات kg</th><th>سهم/kg</th></tr>'+rows;
-  t1+='<tr><td>-</td><td>چسب خشک</td><td>-</td><td>'+fmt1(p.adhesiveDryGsm)+'</td><td>'+fmt1(p.adhesiveDryGsm/f*100)+'%</td><td>-</td><td>'+fmt(adhesiveDryKg)+'</td><td>-</td><td>-</td></tr>';
-  t1+='<tr><td>-</td><td>مرکب خشک</td><td>-</td><td>'+fmt1(p.inkDryGsm)+'</td><td>'+fmt1(p.inkDryGsm/f*100)+'%</td><td>-</td><td>'+fmt(inkDryKg)+'</td><td>-</td><td>-</td></tr>';
-  t1+='</table>';
+  var t1='<table><tr><th>لایه</th><th>جنس</th><th>فی</th><th>g/m²</th><th>%</th><th>ضایعات</th><th>مصرف kg</th><th>ضایعات kg</th><th>سهم/kg</th></tr>'+rows+'</table>';
   html+=tableWrap(t1);
-
-  var tProcess='<table>';
-  tProcess+='<tr><th>آیتم</th><th>فی</th><th>g/m²</th><th>Solid نهایی</th><th>ضایعات</th><th>مصرف kg</th><th>ضایعات kg</th><th>هزینه/kg</th></tr>';
-  tProcess+='<tr><td>چسب اورجینال</td><td>'+fmt(adhPrice)+'</td><td>'+fmt1(p.glueOriginalGsm)+'</td><td>-</td><td>'+fmt1(glueWaste)+'%</td><td>'+fmt(glueKg)+'</td><td>'+fmt(glueWasteKg)+'</td><td>'+fmt(adhesiveCostKg)+'</td></tr>';
-  tProcess+='<tr><td>حلال چسب</td><td>'+fmt(solventPrice)+'</td><td>'+fmt1(p.solventAdhGsm)+'</td><td>-</td><td>'+fmt1(solventAdhWaste)+'%</td><td>'+fmt(solventAdhKg)+'</td><td>'+fmt(solventAdhWasteKg)+'</td><td>'+fmt(solventAdhCostKg)+'</td></tr>';
-  tProcess+='<tr><td>چسب آماده</td><td>-</td><td>'+fmt1(p.adhesiveWetGsm)+'</td><td>'+fmt1(p.glueFinalSolid)+'%</td><td>-</td><td>'+fmt(adhesiveWetKg)+'</td><td>-</td><td>'+fmt(adhesiveCostKg+solventAdhCostKg)+'</td></tr>';
-  tProcess+='<tr><td>چسب خشک</td><td>-</td><td>'+fmt1(p.adhesiveDryGsm)+'</td><td>-</td><td>-</td><td>'+fmt(adhesiveDryKg)+'</td><td>-</td><td>-</td></tr>';
-  tProcess+='<tr><td>مرکب اورجینال</td><td>'+fmt(inkPrice)+'</td><td>'+fmt1(p.inkOriginalGsm)+'</td><td>-</td><td>'+fmt1(inkWaste)+'%</td><td>'+fmt(inkKg)+'</td><td>'+fmt(inkWasteKg)+'</td><td>'+fmt(inkCostKg)+'</td></tr>';
-  tProcess+='<tr><td>حلال مرکب</td><td>'+fmt(solventPrice)+'</td><td>'+fmt1(p.solventInkGsm)+'</td><td>-</td><td>'+fmt1(solventInkWaste)+'%</td><td>'+fmt(solventInkKg)+'</td><td>'+fmt(solventInkWasteKg)+'</td><td>'+fmt(solventInkCostKg)+'</td></tr>';
-  tProcess+='<tr><td>مرکب آماده</td><td>-</td><td>'+fmt1(p.inkWetGsm)+'</td><td>'+fmt1(p.inkFinalSolid)+'%</td><td>-</td><td>'+fmt(inkWetKg)+'</td><td>-</td><td>'+fmt(inkCostKg+solventInkCostKg)+'</td></tr>';
-  tProcess+='<tr><td>مرکب خشک</td><td>-</td><td>'+fmt1(p.inkDryGsm)+'</td><td>-</td><td>-</td><td>'+fmt(inkDryKg)+'</td><td>-</td><td>-</td></tr>';
-  tProcess+='</table>';
-  html+=tableWrap(tProcess);
-
-  var t2='<table><tr><th>بخش هزینه</th><th>تومان/kg</th></tr>'+ 
-  '<tr><td>مواد فیلم</td><td>'+fmt(materialCostKg)+'</td></tr>'+ 
-  '<tr><td>چسب اورجینال</td><td>'+fmt(adhesiveCostKg)+'</td></tr>'+ 
-  '<tr><td>حلال چسب</td><td>'+fmt(solventAdhCostKg)+'</td></tr>'+ 
-  '<tr><td>مرکب اورجینال</td><td>'+fmt(inkCostKg)+'</td></tr>'+ 
-  '<tr><td>حلال مرکب</td><td>'+fmt(solventInkCostKg)+'</td></tr>'+ 
-  '<tr><td>تبدیل و سربار</td><td>'+fmt(conversion)+'</td></tr>'+ 
+  var t2='<table><tr><th>بخش هزینه</th><th>تومان/kg</th></tr>'+
+  '<tr><td>مواد فیلم</td><td>'+fmt(materialCostKg)+'</td></tr>'+
+  '<tr><td>چسب</td><td>'+fmt(adhesiveCostKg)+'</td></tr>'+
+  ((p.slGlueOriginalGsm||0)>0?'<tr><td>چسب غیرحلالی</td><td>'+fmt(solventlessKg*slAdhPrice/gross)+'</td></tr>':'')+
+  '<tr><td>حلال چسب</td><td>'+fmt(solventAdhCostKg)+'</td></tr>'+
+  '<tr><td>مرکب</td><td>'+fmt(inkCostKg)+'</td></tr>'+
+  '<tr><td>حلال مرکب</td><td>'+fmt(solventInkCostKg)+'</td></tr>'+
+  '<tr><td>تبدیل و سربار</td><td>'+fmt(conversion)+'</td></tr>'+
   '<tr><td><b>جمع تمام‌شده</b></td><td><b>'+fmt(totalCostKg)+'</b></td></tr></table>';
   html+=tableWrap(t2);
   html+='<div class="grid no-print"><button type="button" onclick="saveFreeReportFromCurrent()">ذخیره این گزارش</button><button type="button" class="gray" onclick="printFreeCurrent()">چاپ / PDF همین گزارش</button></div>';
