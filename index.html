@@ -2331,9 +2331,69 @@ function getFreeProcess(filmGsm){
   var inkOriginalGsm=inkDryGsm/(inkSolid/100);
   var solventInkGsm=inkOriginalGsm*(inkSolventRatio/inkRatio);
   var inkWetGsm=inkOriginalGsm+solventInkGsm;
-  return {lamPass:lamPass,adhesiveDryGsm:adhesiveDryGsm,glueOriginalGsm:glueOriginalGsm,solventAdhGsm:solventAdhGsm,adhesiveWetGsm:adhesiveWetGsm,inkDryGsm:inkDryGsm,inkOriginalGsm:inkOriginalGsm,solventInkGsm:solventInkGsm,inkWetGsm:inkWetGsm,finalGsm:filmGsm+adhesiveDryGsm+inkDryGsm};
+  var glueFinalSolid=adhesiveWetGsm>0 ? adhesiveDryGsm/adhesiveWetGsm*100 : 0;
+  var inkFinalSolid=inkWetGsm>0 ? inkDryGsm/inkWetGsm*100 : 0;
+  return {lamPass:lamPass,adhesiveDryGsm:adhesiveDryGsm,glueOriginalGsm:glueOriginalGsm,solventAdhGsm:solventAdhGsm,adhesiveWetGsm:adhesiveWetGsm,glueFinalSolid:glueFinalSolid,inkDryGsm:inkDryGsm,inkOriginalGsm:inkOriginalGsm,solventInkGsm:solventInkGsm,inkWetGsm:inkWetGsm,inkFinalSolid:inkFinalSolid,finalGsm:filmGsm+adhesiveDryGsm+inkDryGsm};
 }
 function buildFreeProductName(layers){return layers.map(function(x){return x.mat+fmt1(x.mic).replace(".00","").replace(".0","");}).join(" / ");}
+function getFreeReportInputs(){
+  var ids=["freeReportName","freeCustomerName","freeNote","freeLayerCount","freeTargetKg","freeExtraPercent","freeProfit","freePrintArea","freeGlueDryPerLam","freeGlueSolid","freeGlueRatio","freeGlueSolventRatio","freeGlueWaste","freeSolventAdhWaste","freeInkDry","freeInkSolid","freeInkRatio","freeInkSolventRatio","freeInkWaste","freeSolventInkWaste","freeAdhPrice","freeSolventPrice","freeInkPrice","freePrintCost","freeLamCost","freeCutCost","freeOverhead"];
+  var inputs={fields:{},layers:[]};
+  ids.forEach(function(id){var el=document.getElementById(id); if(el)inputs.fields[id]=el.value;});
+  var n=freeVal("freeLayerCount")||3;
+  for(var i=1;i<=n;i++){
+    inputs.layers.push({
+      mat:(document.getElementById("freeMat"+i)?.value||""),
+      mic:(document.getElementById("freeMic"+i)?.value||""),
+      price:(document.getElementById("freePrice"+i)?.value||""),
+      waste:(document.getElementById("freeWaste"+i)?.value||"")
+    });
+  }
+  return inputs;
+}
+function applyFreeReportInputs(inputs){
+  if(!inputs || !inputs.fields)return false;
+  Object.keys(inputs.fields).forEach(function(id){var el=document.getElementById(id); if(el)el.value=inputs.fields[id];});
+  makeFreeLayers();
+  if(Array.isArray(inputs.layers)){
+    inputs.layers.forEach(function(x,idx){
+      var i=idx+1;
+      var mat=document.getElementById("freeMat"+i), mic=document.getElementById("freeMic"+i), price=document.getElementById("freePrice"+i), waste=document.getElementById("freeWaste"+i);
+      if(mat && x.mat){mat.value=normalizeCode(x.mat);}
+      if(mic){mic.value=x.mic||"";}
+      if(price){price.value=x.price||"";}
+      if(waste){waste.value=x.waste||"";}
+    });
+  }
+  return true;
+}
+function buildFreeReportInputHtml(r){
+  var inp=(r&&r.inputs)||getFreeReportInputs();
+  var f=(inp&&inp.fields)||{};
+  var layers=(inp&&inp.layers)||[];
+  var rows="";
+  layers.forEach(function(x,idx){rows+='<tr><td>'+ (idx+1) +'</td><td>'+escapeHtml(x.mat||"")+'</td><td>'+escapeHtml(x.mic||"")+'</td><td>'+escapeHtml(x.price||"")+'</td><td>'+escapeHtml(x.waste||"")+'</td></tr>';});
+  var html='<div class="section"><div class="title">اطلاعات ورودی گزارش</div>';
+  html+='<div class="small">نام گزارش: <b>'+escapeHtml(f.freeReportName||(r&&r.name)||"")+'</b><br>مشتری / رقیب / پروژه: <b>'+escapeHtml(f.freeCustomerName||(r&&r.customer)||"-")+'</b><br>توضیحات: '+escapeHtml(f.freeNote||(r&&r.note)||"-")+'</div>';
+  html+=tableWrap('<table><tr><th>لایه</th><th>جنس</th><th>ضخامت</th><th>قیمت/kg</th><th>ضایعات</th></tr>'+rows+'</table>');
+  html+=tableWrap('<table><tr><th>آیتم</th><th>مقدار</th></tr>'+
+    '<tr><td>مقدار تولید مبنا kg</td><td>'+escapeHtml(f.freeTargetKg||"")+'</td></tr>'+
+    '<tr><td>مازاد روی قیمت مواد %</td><td>'+escapeHtml(f.freeExtraPercent||"")+'</td></tr>'+
+    '<tr><td>سود پیشنهادی %</td><td>'+escapeHtml(f.freeProfit||"")+'</td></tr>'+
+    '<tr><td>درصد سطح چاپ %</td><td>'+escapeHtml(f.freePrintArea||"")+'</td></tr>'+
+    '<tr><td>چسب خشک هر لمینت g/m²</td><td>'+escapeHtml(f.freeGlueDryPerLam||"")+'</td></tr>'+
+    '<tr><td>Solid چسب %</td><td>'+escapeHtml(f.freeGlueSolid||"")+'</td></tr>'+
+    '<tr><td>نسبت چسب / حلال چسب</td><td>'+escapeHtml((f.freeGlueRatio||"")+" / "+(f.freeGlueSolventRatio||""))+'</td></tr>'+
+    '<tr><td>ضایعات چسب / حلال چسب %</td><td>'+escapeHtml((f.freeGlueWaste||"")+" / "+(f.freeSolventAdhWaste||""))+'</td></tr>'+
+    '<tr><td>مرکب خشک g/m²</td><td>'+escapeHtml(f.freeInkDry||"")+'</td></tr>'+
+    '<tr><td>Solid مرکب %</td><td>'+escapeHtml(f.freeInkSolid||"")+'</td></tr>'+
+    '<tr><td>نسبت مرکب / حلال مرکب</td><td>'+escapeHtml((f.freeInkRatio||"")+" / "+(f.freeInkSolventRatio||""))+'</td></tr>'+
+    '<tr><td>ضایعات مرکب / حلال مرکب %</td><td>'+escapeHtml((f.freeInkWaste||"")+" / "+(f.freeSolventInkWaste||""))+'</td></tr>'+
+    '<tr><td>قیمت چسب / حلال / مرکب</td><td>'+escapeHtml((f.freeAdhPrice||"")+" / "+(f.freeSolventPrice||"")+" / "+(f.freeInkPrice||""))+'</td></tr>'+
+    '<tr><td>چاپ / لمینت / برش / سربار</td><td>'+escapeHtml((f.freePrintCost||"")+" / "+(f.freeLamCost||"")+" / "+(f.freeCutCost||"")+" / "+(f.freeOverhead||""))+'</td></tr>'+ '</table>');
+  html+='</div>';
+  return html;
+}
 function calculateFree(saveReport){
   var data=getFreeLayers(); if(!data)return;
   var p=getFreeProcess(data.filmGsm), f=p.finalGsm;
@@ -2418,15 +2478,15 @@ function calculateFree(saveReport){
   html+=tableWrap(t2);
   html+='<div class="grid no-print"><button type="button" onclick="saveFreeReportFromCurrent()">ذخیره این گزارش</button><button type="button" class="gray" onclick="printFreeCurrent()">چاپ / PDF همین گزارش</button></div>';
   html+='</div>';
-  var result={id:Date.now(),date:new Date().toLocaleString('fa-IR'),name:(document.getElementById("freeReportName")?.value||"گزارش آزاد").trim()||"گزارش آزاد",customer:(document.getElementById("freeCustomerName")?.value||"").trim(),note:(document.getElementById("freeNote")?.value||"").trim(),productName:productName,totalCostKg:totalCostKg,saleKg:saleKg,costM2:costM2,saleM2:saleM2,finalGsm:f,gross:gross,areaM2:areaM2,profit:profit,extra:extra,html:html};
+  var result={id:Date.now(),date:new Date().toLocaleString('fa-IR'),name:(document.getElementById("freeReportName")?.value||"گزارش آزاد").trim()||"گزارش آزاد",customer:(document.getElementById("freeCustomerName")?.value||"").trim(),note:(document.getElementById("freeNote")?.value||"").trim(),productName:productName,totalCostKg:totalCostKg,saleKg:saleKg,costM2:costM2,saleM2:saleM2,finalGsm:f,gross:gross,areaM2:areaM2,profit:profit,extra:extra,inputs:getFreeReportInputs(),html:html};
   window.lastFreeCalcResult=result;
   document.getElementById("freeResult").innerHTML=html;
   if(saveReport===true)saveFreeReport(result);
 }
 function getFreeReports(){try{return JSON.parse(localStorage.getItem("tak_free_reports")||"[]")||[]}catch(e){return []}}
 function setFreeReports(arr){localStorage.setItem("tak_free_reports",JSON.stringify(arr||[]));}
-function saveFreeReportFromCurrent(){if(!window.lastFreeCalcResult){calculateFree(false); if(!window.lastFreeCalcResult)return;} saveFreeReport(window.lastFreeCalcResult);}
-function saveFreeReport(r){var arr=getFreeReports(); r=Object.assign({},r,{id:Date.now(),date:new Date().toLocaleString('fa-IR')}); arr.unshift(r); setFreeReports(arr); renderFreeReports(); alert("گزارش محاسبه آزاد ذخیره شد");}
+function saveFreeReportFromCurrent(){if(!window.lastFreeCalcResult){calculateFree(false); if(!window.lastFreeCalcResult)return;} window.lastFreeCalcResult.inputs=getFreeReportInputs(); saveFreeReport(window.lastFreeCalcResult);}
+function saveFreeReport(r){var arr=getFreeReports(); r=Object.assign({},r,{id:Date.now(),date:new Date().toLocaleString('fa-IR'),inputs:r.inputs||getFreeReportInputs()}); arr.unshift(r); setFreeReports(arr); renderFreeReports(); alert("گزارش محاسبه آزاد ذخیره شد");}
 function renderFreeReports(){
   var box=document.getElementById("freeReportsList"); if(!box)return;
   var q=(document.getElementById("freeReportSearch")?.value||"").toLowerCase();
@@ -2438,10 +2498,10 @@ function renderFreeReports(){
   });
   box.innerHTML=html;
 }
-function openFreeReport(id){var r=getFreeReports().find(function(x){return Number(x.id)===Number(id)}); if(!r)return; document.getElementById("freeResult").innerHTML=r.html; window.lastFreeCalcResult=r; document.getElementById("freeResult").scrollIntoView({behavior:"smooth",block:"start"});}
+function openFreeReport(id){var r=getFreeReports().find(function(x){return Number(x.id)===Number(id)}); if(!r)return; if(r.inputs){applyFreeReportInputs(r.inputs);} document.getElementById("freeResult").innerHTML=(r.inputs?buildFreeReportInputHtml(r):"")+r.html; window.lastFreeCalcResult=r; document.getElementById("freeResult").scrollIntoView({behavior:"smooth",block:"start"});}
 function deleteFreeReport(id){if(!confirm("این گزارش حذف شود؟"))return; setFreeReports(getFreeReports().filter(function(x){return Number(x.id)!==Number(id)})); renderFreeReports();}
 function clearFreeReports(){if(!confirm("همه گزارش‌های محاسبه آزاد حذف شوند؟"))return; setFreeReports([]); renderFreeReports();}
-function printFreeCurrent(){var r=window.lastFreeCalcResult; if(!r){alert("اول محاسبه کن");return;} var w=window.open("","_blank"); w.document.write('<html dir="rtl"><head><title>'+escapeHtml(r.name)+'</title><style>body{font-family:Tahoma,Arial;padding:16px}table{width:100%;border-collapse:collapse;font-size:11px}td,th{border:1px solid #999;padding:6px;text-align:center}th{background:#082b66;color:white}.summary{display:grid;grid-template-columns:1fr 1fr;gap:8px}.summary div{border:1px solid #ddd;padding:10px;border-radius:10px}</style></head><body>'+r.html.replace(/<button[\s\S]*?<\/button>/g,'')+'</body></html>'); w.document.close(); w.print();}
+function printFreeCurrent(){var r=window.lastFreeCalcResult; if(!r){alert("اول محاسبه کن");return;} if(!r.inputs){r.inputs=getFreeReportInputs();} var printable=buildFreeReportInputHtml(r)+r.html; var w=window.open("","_blank"); w.document.write('<html dir="rtl"><head><title>'+escapeHtml(r.name)+'</title><style>body{font-family:Tahoma,Arial;padding:16px}table{width:100%;border-collapse:collapse;font-size:11px}td,th{border:1px solid #999;padding:6px;text-align:center}th{background:#082b66;color:white}.summary{display:grid;grid-template-columns:1fr 1fr;gap:8px}.summary div{border:1px solid #ddd;padding:10px;border-radius:10px}.section{margin-bottom:14px}.title{font-weight:bold;color:#082b66;margin:8px 0}.small{font-size:12px;line-height:1.8}</style></head><body>'+printable.replace(/<button[\s\S]*?<\/button>/g,'')+'</body></html>'); w.document.close(); w.print();}
 
 
 /* === TAK Backup / Restore stable v1 === */
