@@ -217,6 +217,15 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 <div id="tab_calc" class="tab-page">
 
 <div class="section">
+<div class="title">۰. سود و مازاد رسمی</div>
+<div class="small">این دو عدد از تنظیمات مدیر می‌آیند. در محاسبه قیمت فقط رسمی هستند؛ اگر ویرایش شوند، تنظیمات مدیر هم آپدیت می‌شود.</div>
+<div class="grid">
+<div><label>مازاد روی قیمت مواد، %</label><input id="calcExtraPercent" class="readonly-field" type="text" value="0" readonly><button type="button" class="gray" onclick="editOfficialCalcSetting('extraPercent','calcExtraPercent','مازاد روی قیمت مواد','%')">✏️ ویرایش مقدار رسمی</button></div>
+<div><label>سود پیشنهادی، %</label><input id="calcProfit" class="readonly-field" type="text" value="20" readonly><button type="button" class="gray" onclick="editOfficialCalcSetting('profit','calcProfit','سود پیشنهادی','%')">✏️ ویرایش مقدار رسمی</button></div>
+</div>
+</div>
+
+<div class="section">
 <div class="title">۱. تعریف ساختار محصول</div>
 
 <label>تعداد لایه</label>
@@ -847,6 +856,7 @@ renderProductList();
 renderPriceManager();
 renderMaterialEditor();
 updateCalcPrintAreaField();
+syncCalcOfficialFields();
 renderCasePrices();
 try{makeFreeLayers();loadFreeDefaultsOnce();renderFreeReports();}catch(e){}
 applyPermissionsToMenu();
@@ -1339,6 +1349,50 @@ var n=clean(document.getElementById("layerCount")?document.getElementById("layer
 for(var i=1;i<=n;i++){applyMaterialPriceToLayer(i)}
 }
 
+
+function formatNumberText(raw){
+  raw=String(raw||"").replace(/,/g,"").trim();
+  if(raw==="")return "";
+  if(isNaN(raw))return raw;
+  var parts=raw.split(".");
+  parts[0]=Number(parts[0]||0).toLocaleString("en-US");
+  return parts.join(".");
+}
+function showNumberEditModal(title,currentValue,allowZero,onOk){
+  var old=document.getElementById("numberEditModal");
+  if(old)old.remove();
+  var box=document.createElement("div");
+  box.id="numberEditModal";
+  box.style.cssText="position:fixed;inset:0;background:rgba(15,23,42,.52);z-index:900;display:flex;align-items:center;justify-content:center;padding:16px";
+  box.innerHTML='<div style="background:white;width:100%;max-width:390px;border-radius:22px;padding:18px;box-shadow:0 22px 70px rgba(15,23,42,.28);border:1px solid #dbeafe;text-align:right">'+
+    '<div style="font-weight:bold;color:#082b66;font-size:18px;margin-bottom:12px">'+title+'</div>'+
+    '<label style="display:block;margin-bottom:6px">عدد جدید</label>'+
+    '<input id="numberEditInput" type="text" inputmode="decimal" style="width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:12px;font-size:16px;text-align:left;direction:ltr" value="'+String(currentValue||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;")+'">'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">'+
+    '<button type="button" id="numberEditOk" style="margin:0;background:#15803d">ثبت</button>'+
+    '<button type="button" id="numberEditCancel" style="margin:0;background:#64748b">انصراف</button>'+
+    '</div></div>';
+  document.body.appendChild(box);
+  var inp=document.getElementById("numberEditInput");
+  inp.value=formatNumberText(inp.value);
+  inp.oninput=function(){
+    var pos=inp.selectionStart;
+    var before=inp.value.length;
+    inp.value=formatNumberText(inp.value);
+    var after=inp.value.length;
+    try{inp.setSelectionRange(Math.max(0,pos+(after-before)),Math.max(0,pos+(after-before)));}catch(e){}
+  };
+  document.getElementById("numberEditCancel").onclick=function(){box.remove();};
+  box.onclick=function(e){if(e.target===box)box.remove();};
+  document.getElementById("numberEditOk").onclick=function(){
+    var num=clean(inp.value);
+    if((allowZero && num<0) || (!allowZero && num<=0)){alert("عدد معتبر وارد کن");return;}
+    box.remove();
+    onOk(num);
+  };
+  setTimeout(function(){inp.focus();inp.select();},50);
+}
+
 function editOfficialLayerPrice(i){
   if(currentUser && !hasPerm("materials")){alert("دسترسی تغییر قیمت رسمی مواد ندارید");return;}
   var matEl=document.getElementById("mat"+i);
@@ -1346,20 +1400,18 @@ function editOfficialLayerPrice(i){
   if(!matEl || !priceEl)return;
   var mat=normalizeCode(matEl.value);
   var current=clean(priceEl.value);
-  var val=prompt("قیمت رسمی جدید برای "+mat+"، تومان/کیلو", current?fmt(current):"");
-  if(val===null)return;
-  var num=clean(val);
-  if(num<=0){alert("قیمت معتبر وارد کن");return;}
-  var prices=getMasterMaterialPrices();
-  prices[mat]=num;
-  setMasterMaterialPrices(prices);
-  priceEl.value=fmt(num);
-  localStorage.setItem("tak_price"+i,priceEl.value);
-  try{renderPriceManager();renderMaterialEditor();}catch(e){}
-  applyMasterPricesToCurrentLayers();
-  try{refreshAllPrices(false);}catch(e){}
-  try{dbSaveMaterials();}catch(e){}
-  alert("قیمت رسمی "+mat+" آپدیت شد.");
+  showNumberEditModal("قیمت رسمی جدید برای "+mat+"، تومان/کیلو", current?fmt(current):"", false, function(num){
+    var prices=getMasterMaterialPrices();
+    prices[mat]=num;
+    setMasterMaterialPrices(prices);
+    priceEl.value=fmt(num);
+    localStorage.setItem("tak_price"+i,priceEl.value);
+    try{renderPriceManager();renderMaterialEditor();}catch(e){}
+    applyMasterPricesToCurrentLayers();
+    try{refreshAllPrices(false);}catch(e){}
+    try{dbSaveMaterials();}catch(e){}
+    alert("قیمت رسمی "+mat+" آپدیت شد.");
+  });
 }
 
 function editOfficialProcessPrice(fieldId,label){
@@ -1367,16 +1419,14 @@ function editOfficialProcessPrice(fieldId,label){
   var el=document.getElementById(fieldId);
   if(!el)return;
   var current=clean(el.value);
-  var val=prompt(label+" جدید، تومان/کیلو", current?fmt(current):"");
-  if(val===null)return;
-  var num=clean(val);
-  if(num<=0){alert("قیمت معتبر وارد کن");return;}
-  el.value=fmt(num);
-  localStorage.setItem("tak_"+fieldId,el.value);
-  try{renderPriceManager();}catch(e){}
-  try{syncSavedProductsFromGlobalSettings();refreshAllPrices(false);}catch(e){}
-  try{dbSaveSettings();}catch(e){}
-  alert(label+" رسمی آپدیت شد.");
+  showNumberEditModal(label+" جدید، تومان/کیلو", current?fmt(current):"", false, function(num){
+    el.value=fmt(num);
+    localStorage.setItem("tak_"+fieldId,el.value);
+    try{renderPriceManager();}catch(e){}
+    try{syncSavedProductsFromGlobalSettings();refreshAllPrices(false);}catch(e){}
+    try{dbSaveSettings();}catch(e){}
+    alert(label+" رسمی آپدیت شد.");
+  });
 }
 
 function syncSavedProductsFromMasterPrices(){
@@ -1425,6 +1475,7 @@ saveMasterMaterialPrices(false);
 return;
 }
 if(isGlobalSettingId(el.id)){
+if(el.id==="extraPercent" || el.id==="profit"){syncCalcOfficialFields();}
 syncSavedProductsFromGlobalSettings();
 scheduleSettingsSave();
 }
@@ -1443,6 +1494,34 @@ data[id]=fields[i].value;
 return data;
 }
 
+
+function syncCalcOfficialFields(){
+  var pairs=[['extraPercent','calcExtraPercent'],['profit','calcProfit']];
+  for(var i=0;i<pairs.length;i++){
+    var adminEl=document.getElementById(pairs[i][0]);
+    var calcEl=document.getElementById(pairs[i][1]);
+    if(calcEl){
+      var saved=localStorage.getItem('tak_'+pairs[i][0]);
+      calcEl.value=adminEl ? adminEl.value : (saved!==null?saved:calcEl.value);
+    }
+  }
+}
+
+function editOfficialCalcSetting(adminFieldId,calcFieldId,label,suffix){
+  if(currentUser && !hasPerm("settings")){alert("دسترسی تغییر تنظیمات رسمی ندارید");return;}
+  var adminEl=document.getElementById(adminFieldId);
+  var calcEl=document.getElementById(calcFieldId);
+  var current=clean(adminEl ? adminEl.value : (calcEl ? calcEl.value : 0));
+  showNumberEditModal(label+" جدید"+(suffix?" ("+suffix+")":""), current?fmt1(current):"0", true, function(num){
+    var shown=fmt1(num).replace(/\.00$/,'').replace(/\.0$/,'');
+    if(adminEl){adminEl.value=shown;}
+    if(calcEl){calcEl.value=shown;}
+    localStorage.setItem("tak_"+adminFieldId,shown);
+    try{syncSavedProductsFromGlobalSettings();refreshAllPrices(false);}catch(e){}
+    try{dbSaveSettings();}catch(e){}
+    alert(label+" رسمی آپدیت شد.");
+  });
+}
 
 function updateCalcPrintAreaField(){
   var adminEl=document.getElementById("printArea");
