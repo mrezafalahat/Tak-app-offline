@@ -1,24 +1,19 @@
-روش استفاده:
+نسخه ریکاوری
 
-1) در GitHub همه فایل‌های قدیمی را حذف کن، مخصوصاً:
-manifest.json
-service-worker.js
-sw.js
-icon-192.png
-icon-512.png
-README.txt قدیمی اگر لازم نداری
+این بسته برای پاک کردن کش خراب و service-worker قبلی است.
 
-2) فقط این دو فایل را آپلود کن:
+در GitHub همه فایل‌ها را پاک کن به جز .github/workflows اگر می‌خواهی بماند.
+بعد این 4 فایل را آپلود کن:
 index.html
 tak-ui.css
+service-worker.js
+sw.js
 
-3) Commit کن.
+بعد Commit کن و سایت را با این باز کن:
+https://...github.io/.../?reset=3
 
-4) در گوشی:
-Chrome > Site settings > Storage / Clear data
-یا سایت را در Incognito باز کن.
+اگر هنوز خراب بود:
+Chrome > Settings > Site settings > All sites > github.io یا rezafalahat.github.io > Clear & reset
+یا Incognito باز کن.
 
-5) اگر باز هم کش ماند، آدرس را اینطوری باز کن:
-?safe=clean1
-
-این نسخه service-worker ندارد و فقط ظاهر را تغییر می‌دهد.
+بعد از اینکه درست شد، می‌توانی service-worker.js و sw.js را حذف کنی.

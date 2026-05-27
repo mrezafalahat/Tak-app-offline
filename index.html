@@ -132,7 +132,6 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 
 
 .readonly-field{background:#f1f5f9!important;color:#475569!important}
-.add-list-disabled{background:#94a3b8!important;color:white!important;cursor:not-allowed!important;opacity:.85}
 .case-card{background:white;border:1px solid #dbe3ef;border-radius:14px;padding:12px;margin-top:10px}
 .case-card b{color:#082b66}
 .case-meta{font-size:12px;color:#64748b;line-height:1.8;margin-top:6px}
@@ -159,7 +158,30 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 
 </style>
 
-<link rel="stylesheet" href="tak-ui.css?v=clean1">
+<link rel="stylesheet" href="tak-ui.css?v=recover3">
+
+<script>
+(function(){
+  try {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        regs.forEach(function(reg){ reg.unregister(); });
+      }).catch(function(){});
+    }
+    if (window.caches && caches.keys) {
+      caches.keys().then(function(keys){
+        keys.forEach(function(key){ caches.delete(key); });
+      }).catch(function(){});
+    }
+  } catch(e) {}
+})();
+</script>
+
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
 </head>
 
 <body onload="bootApp()">
@@ -203,6 +225,7 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 <button type="button" class="drawer-btn" id="btn_calc" onclick="showTab('calc');closeDrawer()">محاسبه قیمت</button>
 <button type="button" class="drawer-btn" id="btn_products" onclick="showTab('products');closeDrawer()">بانک محصولات</button>
 <button type="button" class="drawer-btn" id="btn_price_list" onclick="showTab('price_list');closeDrawer()">خروجی لیست قیمت</button>
+<button type="button" class="drawer-btn" id="btn_case_prices" onclick="showTab('case_prices');closeDrawer()">قیمت‌های موردی</button>
 <button type="button" class="drawer-btn" id="btn_free_calc" onclick="showTab('free_calc');closeDrawer()">محاسبه آزاد</button>
 <button type="button" class="drawer-btn" id="btn_prices" onclick="showTab('prices');closeDrawer()">قیمت مواد</button>
 <button type="button" class="drawer-btn" id="btn_admin" onclick="showTab('admin');closeDrawer()">تنظیمات مدیر</button>
@@ -218,15 +241,6 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 </div>
 
 <div id="tab_calc" class="tab-page">
-
-<div class="section">
-<div class="title">۰. سود و مازاد رسمی</div>
-<div class="small">این دو عدد از تنظیمات مدیر می‌آیند. در محاسبه قیمت فقط رسمی هستند؛ اگر ویرایش شوند، تنظیمات مدیر هم آپدیت می‌شود.</div>
-<div class="grid">
-<div><label>مازاد روی قیمت مواد، %</label><input id="calcExtraPercent" class="readonly-field" type="text" value="0" readonly><button type="button" class="gray" onclick="editOfficialCalcSetting('extraPercent','calcExtraPercent','مازاد روی قیمت مواد','%')">✏️ ویرایش مقدار رسمی</button></div>
-<div><label>سود پیشنهادی، %</label><input id="calcProfit" class="readonly-field" type="text" value="20" readonly><button type="button" class="gray" onclick="editOfficialCalcSetting('profit','calcProfit','سود پیشنهادی','%')">✏️ ویرایش مقدار رسمی</button></div>
-</div>
-</div>
 
 <div class="section">
 <div class="title">۱. تعریف ساختار محصول</div>
@@ -245,8 +259,8 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 <div class="title">۲. قیمت چسب و حلال</div>
 
 <div class="grid">
-<div><label>قیمت چسب اورجینال، تومان/کیلو</label><input id="adhPrice" class="readonly-field" type="text" value="1,000,000" readonly><button type="button" class="gray" onclick="editOfficialProcessPrice('adhPrice','قیمت چسب اورجینال')">✏️ ویرایش قیمت رسمی</button></div>
-<div><label>قیمت حلال، تومان/کیلو</label><input id="solventPrice" class="readonly-field" type="text" value="80,000" readonly><button type="button" class="gray" onclick="editOfficialProcessPrice('solventPrice','قیمت حلال')">✏️ ویرایش قیمت رسمی</button></div>
+<div><label>قیمت چسب اورجینال، تومان/کیلو</label><input id="adhPrice" type="text" value="1,000,000" oninput="formatInput(this)"></div>
+<div><label>قیمت حلال، تومان/کیلو</label><input id="solventPrice" type="text" value="80,000" oninput="formatInput(this)"></div>
 </div>
 </div>
 
@@ -254,7 +268,7 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 <div class="title">۳. قیمت مرکب</div>
 
 <div class="grid">
-<div><label>قیمت مرکب اورجینال، تومان/کیلو</label><input id="inkPrice" class="readonly-field" type="text" value="600,000" readonly><button type="button" class="gray" onclick="editOfficialProcessPrice('inkPrice','قیمت مرکب اورجینال')">✏️ ویرایش قیمت رسمی</button></div>
+<div><label>قیمت مرکب اورجینال، تومان/کیلو</label><input id="inkPrice" type="text" value="600,000" oninput="formatInput(this)"></div>
 <div><label>درصد سطح چاپ</label><input id="calcPrintArea" type="text" value="100" oninput="formatInput(this)"><div class="small">عدد اولیه از تنظیمات مدیر می‌آید؛ اگر اینجا تغییرش بدهی فقط همین محاسبه عوض می‌شود.</div></div>
 </div>
 
@@ -296,7 +310,21 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 </div>
 
 
-<!-- منوی قیمت‌های موردی حذف شد؛ آرشیو موردی داخل محاسبه آزاد است. -->
+<div id="tab_case_prices" class="tab-page" style="display:none">
+<div class="section">
+<div class="title">قیمت‌های موردی</div>
+<div class="small">قیمت‌هایی که هنگام محاسبه به بانک محصولات اضافه نمی‌شوند، اینجا با نام مشتری ذخیره می‌شوند.</div>
+<label>جستجوی مشتری یا محصول</label>
+<input id="casePriceSearch" type="text" placeholder="مثلاً نام مشتری یا PET" oninput="renderCasePrices()">
+<div class="grid no-print">
+<button type="button" class="gray" onclick="renderCasePrices()">🔄 بروزرسانی</button>
+<button type="button" class="redbtn" onclick="clearAllCasePrices()">حذف همه قیمت‌های موردی</button>
+</div>
+<div id="casePricesList"></div>
+</div>
+</div>
+
+
 <div id="tab_free_calc" class="tab-page" style="display:none">
 <div class="section">
 <div class="title">محاسبه آزاد</div>
@@ -373,7 +401,7 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 <div class="title">بانک محصولات ذخیره‌شده</div>
 <label>جستجوی محصول</label>
 <input id="productSearch" type="text" placeholder="مثلاً PET یا ALU یا PE60" oninput="renderProductList()">
-<div class="small">قیمت‌های جدول با قیمت‌های رسمی مواد و تنظیمات فعلی مدیر محاسبه می‌شوند. برای قیمت موردی از محاسبه آزاد استفاده کنید.</div>
+<div class="small">قیمت‌های جدول زنده هستند و با قیمت مواد و تنظیمات فعلی مدیر دوباره محاسبه می‌شوند.</div>
 <div class="grid no-print">
 <button type="button" class="printbtn requires-download" onclick="printSalesPriceList()">⬇️ دانلود فایل لیست فروش</button>
 <button type="button" class="gray requires-print" onclick="openSalesPriceList()">🖨️ نمایش / چاپ لیست</button>
@@ -622,6 +650,7 @@ function canAccessTab(tab){
   if(tab==="calc")return hasPerm("calc");
   if(tab==="products")return hasPerm("products");
   if(tab==="price_list")return hasPerm("price_list");
+  if(tab==="case_prices")return hasPerm("price_list") || hasPerm("products") || hasPerm("calc");
   if(tab==="free_calc")return hasPerm("calc");
   if(tab==="prices")return hasPerm("materials");
   if(tab==="admin")return hasPerm("settings");
@@ -632,14 +661,14 @@ function getDefaultTab(){
   return "home";
 }
 function getFirstAllowedTab(){
-  var order=["calc","products","price_list","free_calc","prices","admin","users"];
+  var order=["calc","products","price_list","case_prices","free_calc","prices","admin","users"];
   for(var i=0;i<order.length;i++){if(canAccessTab(order[i]))return order[i];}
   return "home";
 }
 function applyPermissionsToMenu(){
-  ["home","calc","products","price_list","free_calc","prices","admin","users"].forEach(function(tab){
+  ["home","calc","products","price_list","case_prices","free_calc","prices","admin","users"].forEach(function(tab){
     var btn=document.getElementById("btn_"+tab);
-    if(btn){btn.style.display=(tab==="case_prices")?"none":(canAccessTab(tab)?"block":"none")}
+    if(btn){btn.style.display=canAccessTab(tab)?"block":"none"}
   });
   document.querySelectorAll(".requires-print").forEach(function(el){el.style.display=hasPerm("print")?"block":"none"});
   document.querySelectorAll(".requires-download").forEach(function(el){el.style.display=hasPerm("download")?"block":"none"});
@@ -672,7 +701,7 @@ function makeOfflineAdmin(){
     role:"admin",
     active:true,
     offline:true,
-    permissions:{calc:true,products:true,price_list:true,print:true,download:true,materials:true,groups:true,settings:true,users:true}
+    permissions:{calc:true,products:true,price_list:true,case_prices:true,print:true,download:true,materials:true,groups:true,settings:true,users:true}
   };
 }
 
@@ -817,7 +846,7 @@ if(b){b.classList.remove("open")}
 }
 
 function tabTitle(tab){
-var names={home:"صفحه اصلی",calc:"محاسبه قیمت",products:"بانک محصولات",price_list:"خروجی لیست قیمت",free_calc:"محاسبه آزاد",prices:"قیمت مواد",admin:"تنظیمات مدیر",users:"تعریف کاربر و دسترسی"};
+var names={home:"صفحه اصلی",calc:"محاسبه قیمت",products:"بانک محصولات",price_list:"خروجی لیست قیمت",case_prices:"قیمت‌های موردی",free_calc:"محاسبه آزاد",prices:"قیمت مواد",admin:"تنظیمات مدیر",users:"تعریف کاربر و دسترسی"};
 return names[tab] || "محاسبه قیمت";
 }
 
@@ -827,7 +856,7 @@ if(!canAccessTab(tab)){
   if(tab!==fallback){alert("شما به این بخش دسترسی ندارید");}
   tab=fallback;
 }
-var tabs=["home","calc","products","price_list","free_calc","prices","admin","users"];
+var tabs=["home","calc","products","price_list","case_prices","free_calc","prices","admin","users"];
 for(var i=0;i<tabs.length;i++){
 var page=document.getElementById("tab_"+tabs[i]);
 var btn=document.getElementById("btn_"+tabs[i]);
@@ -841,6 +870,7 @@ var titleEl=document.getElementById("currentPageTitle");
 if(titleEl){titleEl.innerText=tabTitle(tab)}
 localStorage.setItem("tak_activeTab",tab);
 if(tab==="prices"){renderMaterialEditor();renderPriceManager();}
+if(tab==="case_prices"){renderCasePrices();}
 if(tab==="free_calc"){makeFreeLayers(); loadFreeDefaultsOnce(); renderFreeReports();}
 }
 
@@ -859,7 +889,6 @@ renderProductList();
 renderPriceManager();
 renderMaterialEditor();
 updateCalcPrintAreaField();
-syncCalcOfficialFields();
 renderCasePrices();
 try{makeFreeLayers();loadFreeDefaultsOnce();renderFreeReports();}catch(e){}
 applyPermissionsToMenu();
@@ -917,7 +946,7 @@ html+=buildMaterialOptions();
 html+='</select></div>';
 
 html+='<div><label>ضخامت، میکرون</label><input id="mic'+i+'" type="text" placeholder="مثلاً 12" oninput="formatInput(this); renderFamilyLayerOptions()"></div>';
-html+='<div><label>قیمت این لایه، تومان/کیلو</label><input id="price'+i+'" class="readonly-field" type="text" placeholder="از قیمت مواد" readonly><button type="button" class="gray" onclick="editOfficialLayerPrice('+i+')">✏️ ویرایش قیمت رسمی</button></div>';
+html+='<div><label>قیمت این لایه، تومان/کیلو</label><input id="price'+i+'" type="text" placeholder="مثلاً 520,000" oninput="formatInput(this)"></div>';
 html+='<div class="full"><label>موجودی این لایه، کیلوگرم</label><input id="stock'+i+'" type="text" placeholder="مثلاً 1,700" oninput="formatInput(this)"></div>';
 
 html+='</div></div>';
@@ -927,7 +956,6 @@ document.getElementById("layers").innerHTML=html;
 buildAdminLayerSettings(n);
 document.getElementById("analysis").innerHTML="";
 document.getElementById("result").innerHTML="";
-markCalcNeedsRecalculate();
 
 loadForm(true);
 applyMasterPricesToCurrentLayers();
@@ -1344,7 +1372,6 @@ var matEl=document.getElementById("mat"+i);
 var priceEl=document.getElementById("price"+i);
 if(matEl && priceEl && prices[matEl.value]){
 priceEl.value=fmt(prices[matEl.value]);
-markCalcNeedsRecalculate();
 saveForm();
 }
 }
@@ -1352,88 +1379,6 @@ saveForm();
 function applyMasterPricesToCurrentLayers(){
 var n=clean(document.getElementById("layerCount")?document.getElementById("layerCount").value:0);
 for(var i=1;i<=n;i++){applyMaterialPriceToLayer(i)}
-}
-
-
-function formatNumberText(raw){
-  raw=String(raw||"").replace(/,/g,"").trim();
-  if(raw==="")return "";
-  if(isNaN(raw))return raw;
-  var parts=raw.split(".");
-  parts[0]=Number(parts[0]||0).toLocaleString("en-US");
-  return parts.join(".");
-}
-function showNumberEditModal(title,currentValue,allowZero,onOk){
-  var old=document.getElementById("numberEditModal");
-  if(old)old.remove();
-  var box=document.createElement("div");
-  box.id="numberEditModal";
-  box.style.cssText="position:fixed;inset:0;background:rgba(15,23,42,.52);z-index:900;display:flex;align-items:center;justify-content:center;padding:16px";
-  box.innerHTML='<div style="background:white;width:100%;max-width:390px;border-radius:22px;padding:18px;box-shadow:0 22px 70px rgba(15,23,42,.28);border:1px solid #dbeafe;text-align:right">'+
-    '<div style="font-weight:bold;color:#082b66;font-size:18px;margin-bottom:12px">'+title+'</div>'+
-    '<label style="display:block;margin-bottom:6px">عدد جدید</label>'+
-    '<input id="numberEditInput" type="text" inputmode="decimal" style="width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:12px;font-size:16px;text-align:left;direction:ltr" value="'+String(currentValue||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;")+'">'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">'+
-    '<button type="button" id="numberEditOk" style="margin:0;background:#15803d">ثبت</button>'+
-    '<button type="button" id="numberEditCancel" style="margin:0;background:#64748b">انصراف</button>'+
-    '</div></div>';
-  document.body.appendChild(box);
-  var inp=document.getElementById("numberEditInput");
-  inp.value=formatNumberText(inp.value);
-  inp.oninput=function(){
-    var pos=inp.selectionStart;
-    var before=inp.value.length;
-    inp.value=formatNumberText(inp.value);
-    var after=inp.value.length;
-    try{inp.setSelectionRange(Math.max(0,pos+(after-before)),Math.max(0,pos+(after-before)));}catch(e){}
-  };
-  document.getElementById("numberEditCancel").onclick=function(){box.remove();};
-  box.onclick=function(e){if(e.target===box)box.remove();};
-  document.getElementById("numberEditOk").onclick=function(){
-    var num=clean(inp.value);
-    if((allowZero && num<0) || (!allowZero && num<=0)){alert("عدد معتبر وارد کن");return;}
-    box.remove();
-    onOk(num);
-  };
-  setTimeout(function(){inp.focus();inp.select();},50);
-}
-
-function editOfficialLayerPrice(i){
-  if(currentUser && !hasPerm("materials")){alert("دسترسی تغییر قیمت رسمی مواد ندارید");return;}
-  var matEl=document.getElementById("mat"+i);
-  var priceEl=document.getElementById("price"+i);
-  if(!matEl || !priceEl)return;
-  var mat=normalizeCode(matEl.value);
-  var current=clean(priceEl.value);
-  showNumberEditModal("قیمت رسمی جدید برای "+mat+"، تومان/کیلو", current?fmt(current):"", false, function(num){
-    var prices=getMasterMaterialPrices();
-    prices[mat]=num;
-    setMasterMaterialPrices(prices);
-    priceEl.value=fmt(num);
-    localStorage.setItem("tak_price"+i,priceEl.value);
-    try{renderPriceManager();renderMaterialEditor();}catch(e){}
-    applyMasterPricesToCurrentLayers();
-    try{refreshAllPrices(false);}catch(e){}
-    try{dbSaveMaterials();}catch(e){}
-    markCalcNeedsRecalculate();
-    alert("قیمت رسمی "+mat+" آپدیت شد.");
-  });
-}
-
-function editOfficialProcessPrice(fieldId,label){
-  if(currentUser && !hasPerm("materials")){alert("دسترسی تغییر قیمت رسمی ندارید");return;}
-  var el=document.getElementById(fieldId);
-  if(!el)return;
-  var current=clean(el.value);
-  showNumberEditModal(label+" جدید، تومان/کیلو", current?fmt(current):"", false, function(num){
-    el.value=fmt(num);
-    localStorage.setItem("tak_"+fieldId,el.value);
-    try{renderPriceManager();}catch(e){}
-    try{syncSavedProductsFromGlobalSettings();refreshAllPrices(false);}catch(e){}
-    try{dbSaveSettings();}catch(e){}
-    markCalcNeedsRecalculate();
-    alert(label+" رسمی آپدیت شد.");
-  });
 }
 
 function syncSavedProductsFromMasterPrices(){
@@ -1476,14 +1421,12 @@ if(changed){setProducts(products);renderProductList()}
 
 function handleFieldChange(el){
 if(!el || !el.id)return;
-if(el.id!=="productSearch" && el.id.indexOf("free")!==0 && el.id!=="casePriceSearch" && el.id!=="freeReportSearch"){markCalcNeedsRecalculate();}
 if(el.id==="printArea"){updateCalcPrintAreaField();}
 if(isMaterialPriceId(el.id)){
 saveMasterMaterialPrices(false);
 return;
 }
 if(isGlobalSettingId(el.id)){
-if(el.id==="extraPercent" || el.id==="profit"){syncCalcOfficialFields();}
 syncSavedProductsFromGlobalSettings();
 scheduleSettingsSave();
 }
@@ -1502,35 +1445,6 @@ data[id]=fields[i].value;
 return data;
 }
 
-
-function syncCalcOfficialFields(){
-  var pairs=[['extraPercent','calcExtraPercent'],['profit','calcProfit']];
-  for(var i=0;i<pairs.length;i++){
-    var adminEl=document.getElementById(pairs[i][0]);
-    var calcEl=document.getElementById(pairs[i][1]);
-    if(calcEl){
-      var saved=localStorage.getItem('tak_'+pairs[i][0]);
-      calcEl.value=adminEl ? adminEl.value : (saved!==null?saved:calcEl.value);
-    }
-  }
-}
-
-function editOfficialCalcSetting(adminFieldId,calcFieldId,label,suffix){
-  if(currentUser && !hasPerm("settings")){alert("دسترسی تغییر تنظیمات رسمی ندارید");return;}
-  var adminEl=document.getElementById(adminFieldId);
-  var calcEl=document.getElementById(calcFieldId);
-  var current=clean(adminEl ? adminEl.value : (calcEl ? calcEl.value : 0));
-  showNumberEditModal(label+" جدید"+(suffix?" ("+suffix+")":""), current?fmt1(current):"0", true, function(num){
-    var shown=fmt1(num).replace(/\.00$/,'').replace(/\.0$/,'');
-    if(adminEl){adminEl.value=shown;}
-    if(calcEl){calcEl.value=shown;}
-    localStorage.setItem("tak_"+adminFieldId,shown);
-    try{syncSavedProductsFromGlobalSettings();refreshAllPrices(false);}catch(e){}
-    try{dbSaveSettings();}catch(e){}
-    markCalcNeedsRecalculate();
-    alert(label+" رسمی آپدیت شد.");
-  });
-}
 
 function updateCalcPrintAreaField(){
   var adminEl=document.getElementById("printArea");
@@ -1648,19 +1562,6 @@ products[name]={name:name,date:new Date().toLocaleString(),data:captureCurrentPr
 setProducts(products);
 renderProductList();
 return name;
-}
-
-function addCalculatedProductToList(){
-  if(!calcResultValid){
-    alert("چون اعداد تغییر کرده‌اند، اول باید دوباره محاسبه قیمت بزنید؛ بعد به لیست اضافه کنید.");
-    return;
-  }
-  var savedName=autoSaveProductAfterCalculate();
-  if(!savedName){alert("محصول برای ذخیره آماده نیست.");return;}
-  calcResultValid=false;
-  var btn=document.getElementById("addCalcToListBtn");
-  if(btn){btn.classList.add("add-list-disabled");btn.textContent="به لیست اضافه شد";}
-  alert("محصول ذخیره / آپدیت شد: "+savedName);
 }
 
 function loadProduct(name){
@@ -2084,10 +1985,6 @@ async function editAppUser(id){alert("این نسخه کاملاً آفلاین 
 async function saveAppUser(){alert("این نسخه کاملاً آفلاین است؛ تعریف کاربر سرور غیرفعال است.")}
 async function toggleAppUser(id,active){alert("این نسخه کاملاً آفلاین است.")}
 
-var calcResultValid=false;
-var lastCalculatedProductName="";
-function markCalcNeedsRecalculate(){calcResultValid=false;}
-
 function analyze(){
 saveForm();
 var data=getLayers();
@@ -2296,13 +2193,39 @@ var saleM2=saleKg*f/1000;
 var orderCost=totalCostKg*gross;
 var totalSale=saleKg*gross;
 
+var saveMessage="";
 var productNameForSave=buildProductName();
-calcResultValid=true;
-lastCalculatedProductName=productNameForSave;
+if(options.skipSavePrompt){
+  saveMessage='نمایش محاسبه بدون ذخیره جدید.';
+}else{
+  var addToList=await askAddToProductList();
+  if(addToList){
+    var savedName=autoSaveProductAfterCalculate();
+    saveMessage='محصول ذخیره / آپدیت شد: '+savedName;
+  }else{
+    var customerName=prompt("این قیمت موردی برای کدام مشتری ذخیره شود؟");
+    if(customerName!==null && String(customerName).trim()!==""){
+      saveCasePrice(String(customerName).trim(),{
+        productName:productNameForSave,
+        totalCostKg:totalCostKg,
+        saleKg:saleKg,
+        costM2:costM2,
+        saleM2:saleM2,
+        gross:gross,
+        areaM2:areaM2,
+        finalGsm:f,
+        profit:profit
+      });
+      saveMessage='قیمت موردی برای مشتری ذخیره شد: '+String(customerName).trim();
+    }else{
+      saveMessage='این محاسبه در هیچ لیستی ذخیره نشد.';
+    }
+  }
+}
 
 var html='<div class="section"><div class="title">نتیجه قیمت تمام‌شده</div>';
 
-html+='<div class="small green">محاسبه انجام شد. نتیجه را بررسی کنید؛ سپس در صورت تأیید، دکمه اضافه کردن به لیست را بزنید.</div>';
+html+='<div class="small green">'+saveMessage+'</div>';
 
 html+='<div class="summary">';
 html+='<div>قیمت تمام‌شده هر کیلو<b>'+fmt(totalCostKg)+'</b></div>';
@@ -2356,10 +2279,7 @@ html+='<div>کل هزینه سفارش<b>'+fmt(orderCost)+'</b></div>';
 html+='<div>کل فروش پیشنهادی<b>'+fmt(totalSale)+'</b></div>';
 html+='<div>سود ناخالص<b>'+fmt(totalSale-orderCost)+'</b></div>';
 html+='<div>مازاد درصدی<b>'+fmt1(extraPercent)+'%</b></div>';
-html+='<div>سود پیشنهادی<b>'+fmt1(profit)+'%</b></div>';
 html+='</div>';
-
-html+='<button type="button" id="addCalcToListBtn" onclick="addCalculatedProductToList()">اضافه کردن به لیست قیمت / بانک محصولات</button>';
 
 html+='</div>';
 
