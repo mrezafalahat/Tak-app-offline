@@ -325,31 +325,46 @@ td{
 }
 
 
-/* Header centered fix */
+/* ===== HARD CENTER HEADER FIX v4 ===== */
 .header{
- display:flex!important;
- flex-direction:column!important;
- align-items:center!important;
- justify-content:center!important;
- text-align:center!important;
+  position:relative!important;
+  display:block!important;
+  text-align:center!important;
+  direction:ltr!important;
+  padding-left:16px!important;
+  padding-right:16px!important;
 }
 
 .header h1{
- margin:0!important;
- width:100%!important;
- text-align:center!important;
- font-size:22px!important;
- color:white!important;
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0 auto!important;
+  padding:0!important;
+  text-align:center!important;
+  direction:ltr!important;
+  unicode-bidi:plaintext!important;
+  font-size:22px!important;
+  line-height:1.35!important;
+  color:#fff!important;
+  white-space:normal!important;
 }
 
-.header h1:before{
- content:""!important;
+.header h1:before,
+.header h1:after{
+  content:""!important;
+  display:none!important;
 }
 
 .user-chip{
- width:100%!important;
- text-align:center!important;
- margin-top:8px!important;
- color:#dbe7ff!important;
- font-size:13px!important;
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:7px auto 0!important;
+  padding:0!important;
+  text-align:center!important;
+  direction:rtl!important;
+  color:#dbe7ff!important;
+  font-size:13px!important;
+  line-height:1.6!important;
 }
