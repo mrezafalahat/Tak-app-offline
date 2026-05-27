@@ -171,9 +171,9 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
       <div>ورود به ماشین‌حساب فروش</div>
     </div>
     <label>نام کاربری</label>
-    <input id="loginUsername" type="text" value="admin" autocomplete="username">
+    <input id="loginUsername" type="text" value="" placeholder="نام کاربری" autocomplete="username">
     <label style="margin-top:12px">رمز عبور</label>
-    <div class="password-wrap"><input id="loginPassword" type="password" value="" autocomplete="current-password" onkeydown="if(event.key==='Enter'){loginApp();return false;}"><button type="button" class="eye-btn" onclick="toggleLoginPassword();return false;" aria-label="نمایش رمز">👁</button></div>
+    <div class="password-wrap"><input id="loginPassword" type="password" value="" placeholder="رمز عبور" autocomplete="current-password" onkeydown="if(event.key==='Enter'){loginApp();return false;}"><button type="button" class="eye-btn" onclick="toggleLoginPassword();return false;" aria-label="نمایش رمز">👁</button></div>
     <button type="button" onclick="loginApp();return false;">ورود</button>
     <div id="loginError" class="login-error"></div>
     <div id="loginStatus" class="login-status"></div>
@@ -3056,6 +3056,24 @@ function saveAppUser(){
   try{ clearUserForm(); }catch(e){}
   alert("کاربر به‌صورت آفلاین ذخیره شد.");
 }
+</script>
+
+
+<script>
+/* ===== TAK LOGIN BLANK FIX ===== */
+(function(){
+  function clearDefaultLoginFields(){
+    try{
+      var u = document.getElementById("loginUsername");
+      var p = document.getElementById("loginPassword");
+      if(u && u.value === "admin") u.value = "";
+      if(u && !u.getAttribute("placeholder")) u.setAttribute("placeholder","نام کاربری");
+      if(p && !p.getAttribute("placeholder")) p.setAttribute("placeholder","رمز عبور");
+    }catch(e){}
+  }
+  document.addEventListener("DOMContentLoaded", clearDefaultLoginFields);
+  window.addEventListener("load", clearDefaultLoginFields);
+})();
 </script>
 
 </body>
