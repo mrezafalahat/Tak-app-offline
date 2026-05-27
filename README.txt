@@ -1,13 +1,10 @@
-نسخه UI v2
+نسخه کامل با آیکون منو
 
-این نسخه از index اصلی ساخته شده و فقط tak-ui.css به آن لینک شده است.
-هیچ JavaScript یا فرمول محاسباتی تغییر نکرده.
-
-آپلود:
+آپلود در GitHub:
 - index.html
 - tak-ui.css
+- پوشه icons با همه فایل‌های svg
 
-فایل‌های service-worker.js و sw.js و manifest.json را فعلاً نگذار.
-برای تست با:
-?ui=2
-باز کن.
+فعلاً service-worker.js / sw.js / manifest.json نگذار.
+برای تست:
+?icons=1

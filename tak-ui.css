@@ -1,5 +1,5 @@
 
-/* TAK UI v2 - فقط ظاهر، بدون تغییر محاسبات و JavaScript */
+/* TAK UI + MENU ICONS - فقط ظاهر، بدون تغییر محاسبات */
 :root{
   --tak-blue:#2f63d9;
   --tak-blue2:#1f4fc2;
@@ -27,31 +27,43 @@ body{
   padding:0 12px 76px!important;
 }
 
-/* Header: no duplicated TAK */
 .header{
   margin:0 -12px 0!important;
   padding:16px 18px!important;
   border-radius:0 0 22px 22px!important;
   background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue2))!important;
   box-shadow:0 8px 22px rgba(47,99,217,.20)!important;
-  text-align:right!important;
+  text-align:center!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
 }
 
 .header h1{
-  margin:0!important;
-  font-size:21px!important;
+  margin:0 auto!important;
+  width:100%!important;
+  text-align:center!important;
+  font-size:22px!important;
   font-weight:900!important;
-  letter-spacing:.1px;
   color:white!important;
+  direction:ltr!important;
+}
+
+.header h1:before,
+.header h1:after{
+  content:""!important;
+  display:none!important;
 }
 
 .user-chip{
+  width:100%!important;
+  text-align:center!important;
   color:#dbe7ff!important;
-  font-size:12px!important;
-  margin-top:5px!important;
+  font-size:13px!important;
+  margin-top:7px!important;
 }
 
-/* top bar */
 .topbar{
   margin:12px 0 12px!important;
   padding:10px!important;
@@ -96,12 +108,13 @@ body{
   border-radius:999px!important;
 }
 
-/* drawer menu */
+/* Drawer menu with icons */
 .drawer{
   background:#ffffff!important;
   border-radius:24px 0 0 24px!important;
   box-shadow:-12px 0 40px rgba(15,23,42,.22)!important;
-  gap:7px!important;
+  gap:8px!important;
+  padding:14px!important;
 }
 
 .drawer-head{
@@ -109,7 +122,7 @@ body{
   color:var(--tak-text)!important;
   border:1px solid var(--tak-line)!important;
   border-radius:18px!important;
-  text-align:right!important;
+  text-align:center!important;
 }
 
 .drawer-head b{
@@ -125,10 +138,44 @@ body{
   background:#ffffff!important;
   color:var(--tak-text)!important;
   border:1px solid var(--tak-line)!important;
-  border-radius:15px!important;
+  border-radius:16px!important;
   box-shadow:none!important;
-  font-weight:800!important;
+  font-weight:900!important;
   text-align:right!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:11px!important;
+  min-height:52px!important;
+  padding:12px 14px!important;
+}
+
+.drawer-btn span:last-child{
+  flex:1!important;
+  text-align:right!important;
+}
+
+.menu-ic{
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  padding:5px!important;
+  border-radius:12px!important;
+  background:#eef4ff!important;
+  box-sizing:content-box!important;
+}
+
+.menu-icon{
+  width:34px!important;
+  height:34px!important;
+  min-width:34px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:12px!important;
+  background:#eef4ff!important;
+  color:var(--tak-blue2)!important;
+  font-size:22px!important;
 }
 
 .drawer-btn.active{
@@ -137,13 +184,24 @@ body{
   border-color:transparent!important;
 }
 
+.drawer-btn.active .menu-ic,
+.drawer-btn.active .menu-icon{
+  background:rgba(255,255,255,.18)!important;
+  color:white!important;
+  filter:brightness(0) invert(1)!important;
+}
+
 .drawer-btn.logout{
   background:#fff5f5!important;
   color:#b91c1c!important;
   border-color:#ffd4d4!important;
 }
 
-/* cards */
+.drawer-btn.logout .menu-ic{
+  background:#fff0f0!important;
+  filter:none!important;
+}
+
 .section,.card,.product-item,.user-card,.case-card{
   background:var(--tak-card)!important;
   border:1px solid var(--tak-line)!important;
@@ -180,7 +238,6 @@ body{
   line-height:1.9!important;
 }
 
-/* inputs */
 label{
   color:var(--tak-text)!important;
   font-size:12px!important;
@@ -202,7 +259,6 @@ input:focus,select:focus{
   box-shadow:0 0 0 3px rgba(47,99,217,.10)!important;
 }
 
-/* buttons: less heavy */
 button{
   border-radius:15px!important;
   background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue2))!important;
@@ -230,7 +286,6 @@ button.redbtn,.iconbtn{
   color:white!important;
 }
 
-/* summary */
 .summary div{
   background:white!important;
   border:1px solid var(--tak-line)!important;
@@ -243,7 +298,6 @@ button.redbtn,.iconbtn{
   font-size:23px!important;
 }
 
-/* tables */
 .table-wrap{
   border:1px solid var(--tak-line)!important;
   border-radius:18px!important;
@@ -260,7 +314,6 @@ td{
   border-color:#e6edf8!important;
 }
 
-/* login */
 .login-logo{
   background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue2))!important;
   border-radius:22px!important;
@@ -271,13 +324,11 @@ td{
   box-shadow:0 22px 70px rgba(15,23,42,.16)!important;
 }
 
-/* materials */
 .material-row-clean{
   border-radius:18px!important;
   box-shadow:var(--tak-shadow)!important;
 }
 
-/* mobile */
 @media(max-width:650px){
   body{padding:0!important}
   .app{padding:0 10px 76px!important}
@@ -286,7 +337,7 @@ td{
     border-radius:0 0 22px 22px!important;
   }
   .header h1{
-    font-size:19px!important;
+    font-size:20px!important;
   }
   .topbar{
     gap:8px!important;
@@ -312,7 +363,6 @@ td{
   }
 }
 
-/* desktop layer cards */
 @media(min-width:900px){
   #layers{
     display:grid;
@@ -322,49 +372,4 @@ td{
   #layers .card{
     margin-top:0!important;
   }
-}
-
-
-/* ===== HARD CENTER HEADER FIX v4 ===== */
-.header{
-  position:relative!important;
-  display:block!important;
-  text-align:center!important;
-  direction:ltr!important;
-  padding-left:16px!important;
-  padding-right:16px!important;
-}
-
-.header h1{
-  display:block!important;
-  width:100%!important;
-  max-width:none!important;
-  margin:0 auto!important;
-  padding:0!important;
-  text-align:center!important;
-  direction:ltr!important;
-  unicode-bidi:plaintext!important;
-  font-size:22px!important;
-  line-height:1.35!important;
-  color:#fff!important;
-  white-space:normal!important;
-}
-
-.header h1:before,
-.header h1:after{
-  content:""!important;
-  display:none!important;
-}
-
-.user-chip{
-  display:block!important;
-  width:100%!important;
-  max-width:none!important;
-  margin:7px auto 0!important;
-  padding:0!important;
-  text-align:center!important;
-  direction:rtl!important;
-  color:#dbe7ff!important;
-  font-size:13px!important;
-  line-height:1.6!important;
 }

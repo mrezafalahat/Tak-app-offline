@@ -159,7 +159,7 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 
 </style>
 
-<link rel="stylesheet" href="tak-ui.css?v=center4">
+<link rel="stylesheet" href="tak-ui.css?v=icons1">
 </head>
 
 <body onload="bootApp()">
@@ -199,15 +199,15 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 <div id="drawerBackdrop" class="drawer-backdrop" onclick="closeDrawer()"></div>
 <nav id="drawer" class="drawer no-print">
 <div class="drawer-head"><b>TAK Menu</b><span>ماشین حساب فروش</span></div>
-<button type="button" class="drawer-btn active" id="btn_home" onclick="showTab('home');closeDrawer()">صفحه اصلی</button>
-<button type="button" class="drawer-btn" id="btn_calc" onclick="showTab('calc');closeDrawer()">محاسبه قیمت</button>
-<button type="button" class="drawer-btn" id="btn_products" onclick="showTab('products');closeDrawer()">بانک محصولات</button>
-<button type="button" class="drawer-btn" id="btn_price_list" onclick="showTab('price_list');closeDrawer()">خروجی لیست قیمت</button>
-<button type="button" class="drawer-btn" id="btn_free_calc" onclick="showTab('free_calc');closeDrawer()">محاسبه آزاد</button>
-<button type="button" class="drawer-btn" id="btn_prices" onclick="showTab('prices');closeDrawer()">قیمت مواد</button>
-<button type="button" class="drawer-btn" id="btn_admin" onclick="showTab('admin');closeDrawer()">تنظیمات مدیر</button>
-<button type="button" class="drawer-btn" id="btn_users" onclick="showTab('users');closeDrawer()">تعریف کاربر و دسترسی</button>
-<button type="button" class="drawer-btn logout" onclick="logoutApp();closeDrawer()">خروج از حساب</button>
+<button type="button" class="drawer-btn active" id="btn_home" onclick="showTab('home');closeDrawer()"><span class="menu-icon">⌂</span><span>صفحه اصلی</span></button>
+<button type="button" class="drawer-btn" id="btn_calc" onclick="showTab('calc');closeDrawer()"><img src="icons/calculator.svg" class="menu-ic"><span>محاسبه قیمت</span></button>
+<button type="button" class="drawer-btn" id="btn_products" onclick="showTab('products');closeDrawer()"><img src="icons/box.svg" class="menu-ic"><span>بانک محصولات</span></button>
+<button type="button" class="drawer-btn" id="btn_price_list" onclick="showTab('price_list');closeDrawer()"><img src="icons/file.svg" class="menu-ic"><span>خروجی لیست قیمت</span></button>
+<button type="button" class="drawer-btn" id="btn_free_calc" onclick="showTab('free_calc');closeDrawer()"><img src="icons/flask.svg" class="menu-ic"><span>محاسبه آزاد</span></button>
+<button type="button" class="drawer-btn" id="btn_prices" onclick="showTab('prices');closeDrawer()"><img src="icons/money.svg" class="menu-ic"><span>قیمت مواد</span></button>
+<button type="button" class="drawer-btn" id="btn_admin" onclick="showTab('admin');closeDrawer()"><img src="icons/settings.svg" class="menu-ic"><span>تنظیمات مدیر</span></button>
+<button type="button" class="drawer-btn" id="btn_users" onclick="showTab('users');closeDrawer()"><img src="icons/users.svg" class="menu-ic"><span>تعریف کاربر و دسترسی</span></button>
+<button type="button" class="drawer-btn logout" onclick="logoutApp();closeDrawer()"><img src="icons/logout.svg" class="menu-ic"><span>خروج از حساب</span></button>
 </nav>
 
 <div id="tab_home" class="tab-page">
@@ -351,7 +351,7 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 </div>
 <div class="grid">
 <button type="button" class="gray" onclick="loadFreeDefaultsFromMain()">پر کردن از تنظیمات فعلی</button>
-<button type="button" onclick="calculateFree()">محاسبه آزاد</button>
+<button type="button" onclick="calculateFree()"><img src="icons/flask.svg" class="menu-ic"><span>محاسبه آزاد</span></button>
 </div>
 </div>
 <div id="freeResult"></div>
