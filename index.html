@@ -2735,13 +2735,24 @@ function initTakBackupSystem(){
 
 
 <script>
-/* ===== TAK OFFLINE USERS FIX ===== */
+/* ===== TAK OFFLINE USERS FIX V2 ===== */
+function takHtmlEscape(s){
+  return String(s || "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;");
+}
+
 function getOfflineUsers(){
   var raw = localStorage.getItem("tak_offline_users");
   var users = [];
   try{ users = raw ? JSON.parse(raw) : []; }catch(e){ users = []; }
 
-  var adminPass = (typeof getOfflineAdminPassword === "function") ? getOfflineAdminPassword() : (localStorage.getItem("tak_offline_admin_password") || "1234");
+  var adminPass = (typeof getOfflineAdminPassword === "function")
+    ? getOfflineAdminPassword()
+    : (localStorage.getItem("tak_offline_admin_password") || "1234");
+
   var hasAdmin = users.some(function(u){ return u.username === "admin"; });
 
   if(!hasAdmin){
@@ -2752,7 +2763,10 @@ function getOfflineUsers(){
       full_name:"مدیر آفلاین",
       role:"admin",
       active:true,
-      permissions:{calc:true,products:true,price_list:true,print:true,download:true,materials:true,groups:true,settings:true,users:true}
+      permissions:{
+        calc:true,products:true,price_list:true,print:true,download:true,
+        materials:true,groups:true,settings:true,users:true
+      }
     });
   }else{
     users = users.map(function(u){
@@ -2760,11 +2774,15 @@ function getOfflineUsers(){
         u.password = adminPass;
         u.role = "admin";
         u.active = true;
-        u.permissions = {calc:true,products:true,price_list:true,print:true,download:true,materials:true,groups:true,settings:true,users:true};
+        u.permissions = {
+          calc:true,products:true,price_list:true,print:true,download:true,
+          materials:true,groups:true,settings:true,users:true
+        };
       }
       return u;
     });
   }
+
   localStorage.setItem("tak_offline_users", JSON.stringify(users));
   return users;
 }
@@ -2774,17 +2792,13 @@ function setOfflineUsers(users){
 }
 
 function getUserPermsFromForm(){
-  return {
-    calc: !!document.getElementById("perm_calc")?.checked,
-    products: !!document.getElementById("perm_products")?.checked,
-    price_list: !!document.getElementById("perm_price_list")?.checked,
-    print: !!document.getElementById("perm_print")?.checked,
-    download: !!document.getElementById("perm_download")?.checked,
-    materials: !!document.getElementById("perm_materials")?.checked,
-    groups: !!document.getElementById("perm_groups")?.checked,
-    settings: !!document.getElementById("perm_settings")?.checked,
-    users: !!document.getElementById("perm_users")?.checked
-  };
+  var names = ["calc","products","price_list","print","download","materials","groups","settings","users"];
+  var p = {};
+  names.forEach(function(k){
+    var el = document.getElementById("perm_" + k);
+    p[k] = !!(el && el.checked);
+  });
+  return p;
 }
 
 function saveAppUser(){
@@ -2807,6 +2821,7 @@ function saveAppUser(){
 
   var users = getOfflineUsers();
   var existing = users.find(function(u){ return u.username === username; });
+
   var data = {
     id: existing ? existing.id : ("local-" + Date.now()),
     username: username,
@@ -2852,34 +2867,42 @@ function renderUsersList(){
   };
 
   var html = '<div class="users-cards">';
+
   users.forEach(function(u){
     var p = u.permissions || {};
     var badges = Object.keys(permNames).map(function(k){
       return '<span class="badge '+(p[k] ? '' : 'off')+'">'+permNames[k]+'</span>';
     }).join("");
 
+    var safeUsername = takHtmlEscape(u.username);
+
     html += '<div class="user-card">';
-    html += '<div class="user-card-head"><div><div class="user-card-name">'+(u.full_name || u.username)+'</div><div class="small">'+u.username+' | '+(u.role || "")+'</div></div>';
-    html += '<span class="badge">'+(u.active===false ? "غیرفعال" : "فعال")+'</span></div>';
+    html += '<div class="user-card-head">';
+    html += '<div><div class="user-card-name">'+takHtmlEscape(u.full_name || u.username)+'</div>';
+    html += '<div class="small">'+takHtmlEscape(u.username)+' | '+takHtmlEscape(u.role || "")+'</div></div>';
+    html += '<span class="badge">'+(u.active === false ? "غیرفعال" : "فعال")+'</span>';
+    html += '</div>';
     html += '<div>'+badges+'</div>';
 
     if(u.username !== "admin"){
       html += '<div class="user-row-actions" style="margin-top:10px">';
-      html += '<button type="button" class="gray" onclick="editOfflineUser(\\''+u.username.replace(/'/g,"")+"\\')">ویرایش</button>';
-      html += '<button type="button" class="redbtn" onclick="deleteOfflineUser(\\''+u.username.replace(/'/g,"")+"\\')">حذف</button>';
+      html += '<button type="button" class="gray" onclick="editOfflineUser(&quot;'+safeUsername+'&quot;)">ویرایش</button>';
+      html += '<button type="button" class="redbtn" onclick="deleteOfflineUser(&quot;'+safeUsername+'&quot;)">حذف</button>';
       html += '</div>';
     }else{
       html += '<div class="small" style="margin-top:8px">کاربر اصلی سیستم؛ رمز از تنظیمات مدیر تغییر می‌کند.</div>';
     }
+
     html += '</div>';
   });
+
   html += '</div>';
   box.innerHTML = html;
 }
 
 function editOfflineUser(username){
   var users = getOfflineUsers();
-  var u = users.find(function(x){return x.username === username;});
+  var u = users.find(function(x){ return x.username === username; });
   if(!u)return;
 
   document.getElementById("newUsername").value = u.username || "";
@@ -2889,7 +2912,7 @@ function editOfflineUser(username){
 
   var p = u.permissions || {};
   ["calc","products","price_list","print","download","materials","groups","settings","users"].forEach(function(k){
-    var el = document.getElementById("perm_"+k);
+    var el = document.getElementById("perm_" + k);
     if(el)el.checked = !!p[k];
   });
 
@@ -2897,8 +2920,13 @@ function editOfflineUser(username){
 }
 
 function deleteOfflineUser(username){
+  if(username === "admin")return;
   if(!confirm("این کاربر حذف شود؟"))return;
-  var users = getOfflineUsers().filter(function(u){ return u.username !== username || u.username === "admin"; });
+
+  var users = getOfflineUsers().filter(function(u){
+    return u.username !== username;
+  });
+
   setOfflineUsers(users);
   renderUsersList();
 }
@@ -2908,24 +2936,32 @@ function clearUserForm(){
     var el = document.getElementById(id);
     if(el)el.value = "";
   });
+
   var role = document.getElementById("newRole");
   if(role)role.value = "sales";
+
   ["calc","products","price_list","print","download","materials","groups","settings","users"].forEach(function(k){
-    var el = document.getElementById("perm_"+k);
-    if(el)el.checked = (k==="products" || k==="price_list");
+    var el = document.getElementById("perm_" + k);
+    if(el)el.checked = (k === "products" || k === "price_list");
   });
 }
 
-/* override loginApp to support offline users */
 async function loginApp(){
-  var u=(document.getElementById("loginUsername").value||"").trim();
-  var p=(document.getElementById("loginPassword").value||"").trim();
-  var err=document.getElementById("loginError");
-  if(err){err.style.display="none";err.textContent="";}
-  if(!u || !p){showLoginError("نام کاربری و رمز را وارد کن");return false;}
+  var u = (document.getElementById("loginUsername").value || "").trim();
+  var p = (document.getElementById("loginPassword").value || "").trim();
+
+  var err = document.getElementById("loginError");
+  if(err){ err.style.display = "none"; err.textContent = ""; }
+
+  if(!u || !p){
+    showLoginError("نام کاربری و رمز را وارد کن");
+    return false;
+  }
 
   var users = getOfflineUsers();
-  var found = users.find(function(x){ return x.username === u && String(x.password) === String(p) && x.active !== false; });
+  var found = users.find(function(x){
+    return x.username === u && String(x.password) === String(p) && x.active !== false;
+  });
 
   if(found){
     currentUser = {
@@ -2937,6 +2973,7 @@ async function loginApp(){
       offline: true,
       permissions: found.permissions || {}
     };
+
     sessionStorage.setItem("tak_current_user", JSON.stringify(currentUser));
     afterLogin();
     return false;
@@ -2947,13 +2984,22 @@ async function loginApp(){
   return false;
 }
 
-/* ensure users render when tab opens */
-var _oldShowTabUsersFix = window.showTab;
+var _takOldShowTabForUsers = window.showTab;
 window.showTab = function(tab){
-  var r = _oldShowTabUsersFix ? _oldShowTabUsersFix(tab) : undefined;
-  if(tab === "users"){ renderUsersList(); }
-  return r;
+  var result = _takOldShowTabForUsers ? _takOldShowTabForUsers(tab) : undefined;
+  if(tab === "users"){
+    renderUsersList();
+  }
+  return result;
 };
+
+window.addEventListener("load", function(){
+  try{
+    if(document.getElementById("usersList")){
+      renderUsersList();
+    }
+  }catch(e){}
+});
 </script>
 
 </body>
