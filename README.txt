@@ -1,10 +1,13 @@
-این نسخه از فایل اصلی index(4).html ساخته شده است.
+نسخه UI v2
 
-فقط این دو فایل را آپلود کن:
-index.html
-tak-ui.css
+این نسخه از index اصلی ساخته شده و فقط tak-ui.css به آن لینک شده است.
+هیچ JavaScript یا فرمول محاسباتی تغییر نکرده.
 
-هیچ service-worker / manifest / sw.js آپلود نکن.
-اگر قبلاً آپلود شده‌اند حذفشان کن.
+آپلود:
+- index.html
+- tak-ui.css
 
-برای تست، کش Chrome را پاک کن یا در Incognito باز کن.
+فایل‌های service-worker.js و sw.js و manifest.json را فعلاً نگذار.
+برای تست با:
+?ui=2
+باز کن.
