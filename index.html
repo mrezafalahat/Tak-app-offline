@@ -234,16 +234,17 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 <div class="title">۲. قیمت چسب و حلال</div>
 
 <div class="grid">
-<div><label>قیمت چسب اورجینال، تومان/کیلو</label><input id="adhPrice" type="text" value="1,000,000" oninput="formatInput(this)"></div>
-<div><label>قیمت حلال، تومان/کیلو</label><input id="solventPrice" type="text" value="80,000" oninput="formatInput(this)"></div>
+<div><label>قیمت چسب اورجینال، تومان/کیلو</label><input id="adhPrice" type="text" value="1,000,000" readonly class="readonly-field"></div>
+<div><label>قیمت حلال، تومان/کیلو</label><input id="solventPrice" type="text" value="80,000" readonly class="readonly-field"></div>
 </div>
+<div class="small">قیمت‌ها در محاسبه قیمت رسمی فقط از بخش قیمت مواد خوانده می‌شوند و قابل ویرایش مستقیم نیستند.</div>
 </div>
 
 <div class="section">
 <div class="title">۳. قیمت مرکب</div>
 
 <div class="grid">
-<div><label>قیمت مرکب اورجینال، تومان/کیلو</label><input id="inkPrice" type="text" value="600,000" oninput="formatInput(this)"></div>
+<div><label>قیمت مرکب اورجینال، تومان/کیلو</label><input id="inkPrice" type="text" value="600,000" readonly class="readonly-field"></div>
 <div><label>درصد سطح چاپ</label><input id="calcPrintArea" type="text" value="100" oninput="formatInput(this)"><div class="small">عدد اولیه از تنظیمات مدیر می‌آید؛ اگر اینجا تغییرش بدهی فقط همین محاسبه عوض می‌شود.</div></div>
 </div>
 
@@ -376,7 +377,7 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 <div class="title">بانک محصولات ذخیره‌شده</div>
 <label>جستجوی محصول</label>
 <input id="productSearch" type="text" placeholder="مثلاً PET یا ALU یا PE60" oninput="renderProductList()">
-<div class="small">قیمت‌های جدول زنده هستند و با قیمت مواد و تنظیمات فعلی مدیر دوباره محاسبه می‌شوند.</div>
+<div class="small">قیمت‌های بانک محصولات بر اساس قیمت‌های رسمی مواد و تنظیمات فعلی مدیر محاسبه می‌شوند. برای قیمت‌های موردی از محاسبه آزاد استفاده کنید.</div>
 <div class="grid no-print">
 <button type="button" class="printbtn requires-download" onclick="printSalesPriceList()">⬇️ دانلود فایل لیست فروش</button>
 <button type="button" class="gray requires-print" onclick="openSalesPriceList()">🖨️ نمایش / چاپ لیست</button>
@@ -921,7 +922,7 @@ html+=buildMaterialOptions();
 html+='</select></div>';
 
 html+='<div><label>ضخامت، میکرون</label><input id="mic'+i+'" type="text" placeholder="مثلاً 12" oninput="formatInput(this); renderFamilyLayerOptions()"></div>';
-html+='<div><label>قیمت این لایه، تومان/کیلو</label><input id="price'+i+'" type="text" placeholder="مثلاً 520,000" oninput="formatInput(this)"></div>';
+html+='<div><label>قیمت این لایه، تومان/کیلو</label><input id="price'+i+'" type="text" placeholder="از قیمت مواد" readonly class="readonly-field"></div>';
 html+='<div class="full"><label>موجودی این لایه، کیلوگرم</label><input id="stock'+i+'" type="text" placeholder="مثلاً 1,700" oninput="formatInput(this)"></div>';
 
 html+='</div></div>';
