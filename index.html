@@ -159,7 +159,7 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 
 </style>
 
-<link rel="stylesheet" href="tak-ui.css?v=inline2">
+<link rel="stylesheet" href="tak-ui.css?v=finaluser1">
 </head>
 
 <body onload="bootApp()">
@@ -437,6 +437,12 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 </div>
 
 <div class="section">
+<div class="title">رمز ادمین</div>
+<div class="small">کاربر admin قابل حذف نیست، اما رمز آن از همین بخش قابل تغییر است.</div>
+<button type="button" class="gray" onclick="changeOfflinePassword()">تغییر رمز ادمین</button>
+</div>
+
+<div class="section">
 <div class="title">رمز ورود آفلاین</div>
 <div class="small">رمز پیش‌فرض اولیه 1234 است. بعد از تغییر، رمز جدید فقط روی همین دستگاه ذخیره می‌شود.</div>
 <button type="button" class="gray" onclick="changeOfflinePassword()">تغییر رمز ورود آفلاین</button>
@@ -680,25 +686,56 @@ function changeOfflinePassword(){
   var current = getOfflineAdminPassword();
   var oldPass = prompt("رمز فعلی را وارد کن:");
   if(oldPass === null)return;
-  if(String(oldPass) !== String(current)){
-    alert("رمز فعلی اشتباه است.");
-    return;
-  }
+  if(String(oldPass) !== String(current)){ alert("رمز فعلی اشتباه است."); return; }
   var newPass = prompt("رمز جدید را وارد کن:");
   if(newPass === null)return;
   newPass = String(newPass).trim();
-  if(newPass.length < 4){
-    alert("رمز جدید حداقل باید ۴ کاراکتر باشد.");
-    return;
-  }
+  if(newPass.length < 4){ alert("رمز جدید حداقل باید ۴ کاراکتر باشد."); return; }
   var repeat = prompt("رمز جدید را دوباره وارد کن:");
   if(repeat === null)return;
-  if(String(repeat).trim() !== newPass){
-    alert("تکرار رمز با رمز جدید یکسان نیست.");
-    return;
-  }
+  if(String(repeat).trim() !== newPass){ alert("تکرار رمز با رمز جدید یکسان نیست."); return; }
   setOfflineAdminPassword(newPass);
+  // همگام‌سازی رمز admin در کاربران آفلاین
+  try{
+    var users = JSON.parse(localStorage.getItem("tak_offline_users") || "[]");
+    users = users.map(function(u){ if(u.username==="admin"){u.password=newPass;} return u; });
+    localStorage.setItem("tak_offline_users", JSON.stringify(users));
+  }catch(e){}
   alert("رمز ورود آفلاین با موفقیت تغییر کرد.");
+}
+function getOfflineUsers(){
+  var raw = localStorage.getItem("tak_offline_users");
+  var users = [];
+  try{ users = raw ? JSON.parse(raw) : []; }catch(e){ users = []; }
+
+  var adminPass = getOfflineAdminPassword();
+  var adminPerms = {calc:true,products:true,price_list:true,print:true,download:true,materials:true,groups:true,settings:true,users:true};
+  var hasAdmin = false;
+
+  users = users.map(function(u){
+    if(u && u.username === "admin"){
+      hasAdmin = true;
+      u.id = u.id || "local-admin";
+      u.password = adminPass;
+      u.full_name = u.full_name || "مدیر آفلاین";
+      u.role = "admin";
+      u.active = true;
+      u.permissions = adminPerms;
+    }
+    return u;
+  }).filter(Boolean);
+
+  if(!hasAdmin){
+    users.unshift({id:"local-admin",username:"admin",password:adminPass,full_name:"مدیر آفلاین",role:"admin",active:true,offline:true,permissions:adminPerms});
+  }
+  localStorage.setItem("tak_offline_users", JSON.stringify(users));
+  return users;
+}
+function setOfflineUsers(users){
+  localStorage.setItem("tak_offline_users", JSON.stringify(users || []));
+}
+function escapeHtmlTak(v){
+  return String(v == null ? "" : v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 
 function makeOfflineAdmin(){
@@ -738,13 +775,28 @@ async function loginApp(){
   if(err){err.style.display="none";err.textContent="";}
   if(!u || !p){showLoginError("نام کاربری و رمز را وارد کن");return false;}
 
-  if(u==="admin" && p===getOfflineAdminPassword()){
-    loginOfflineNow();
+  var users = getOfflineUsers();
+  var found = users.find(function(x){
+    return x && x.username === u && String(x.password) === String(p) && x.active !== false;
+  });
+
+  if(found){
+    currentUser = {
+      id: found.id || ("local-" + found.username),
+      username: found.username,
+      full_name: found.full_name || found.username,
+      role: found.role || "sales",
+      active: found.active !== false,
+      offline: true,
+      permissions: found.permissions || {}
+    };
+    sessionStorage.setItem("tak_current_user",JSON.stringify(currentUser));
+    afterLogin();
     return false;
   }
 
   showLoginError("نام کاربری یا رمز عبور اشتباه است.");
-  setLoginStatus("اپلیکیشن کاملاً آفلاین است");
+  setLoginStatus("اپلیکیشن در حالت آفلاین است");
   return false;
 }
 
@@ -837,7 +889,7 @@ function getAdminPassword(){return "";}
 function isAdminUnlocked(){return true;}
 function unlockAdmin(){return true;}
 function lockAdmin(){alert("قفل داخلی مدیر حذف شده؛ دسترسی‌ها از بخش کاربران کنترل می‌شود.");}
-function changeAdminPassword(){changeOfflinePassword();}
+function changeAdminPassword(){alert("تغییر رمز از بخش تعریف کاربر و دسترسی انجام می‌شود.");}
 
 
 function openDrawer(){
@@ -880,6 +932,7 @@ if(titleEl){titleEl.innerText=tabTitle(tab)}
 localStorage.setItem("tak_activeTab",tab);
 if(tab==="prices"){renderMaterialEditor();renderPriceManager();}
 if(tab==="free_calc"){makeFreeLayers(); loadFreeDefaultsOnce(); renderFreeReports();}
+if(tab==="users"){renderUsersList();}
 }
 
 function startApp(){
@@ -2104,23 +2157,106 @@ w.document.open();w.document.write(html);w.document.close();
 
 
 
-async function renderUsersList(){var box=document.getElementById("usersList");if(box)box.innerHTML="نسخه کاملاً آفلاین است؛ مدیریت کاربران سرور غیرفعال است.";}
+function renderUsersList(){
+  var box=document.getElementById("usersList");
+  if(!box)return;
+  var users=getOfflineUsers();
+
+  var permNames={calc:"محاسبه قیمت",products:"بانک محصولات",price_list:"لیست قیمت",print:"چاپ",download:"دانلود",materials:"قیمت مواد",groups:"گروه ضخامت",settings:"تنظیمات",users:"کاربران"};
+  var html='<div class="users-cards">';
+  users.forEach(function(u){
+    var p=u.permissions||{};
+    var badges=Object.keys(permNames).map(function(k){
+      return '<span class="badge '+(p[k]?'':'off')+'">'+permNames[k]+'</span>';
+    }).join("");
+
+    html+='<div class="user-card">';
+    html+='<div class="user-card-head"><div><div class="user-card-name">'+escapeHtmlTak(u.full_name||u.username)+'</div><div class="small">'+escapeHtmlTak(u.username)+' | '+escapeHtmlTak(u.role||"")+'</div></div>';
+    html+='<span class="badge">'+(u.active===false?'غیرفعال':'فعال')+'</span></div>';
+    html+='<div>'+badges+'</div>';
+    if(u.username!=="admin"){
+      html+='<div class="user-row-actions" style="margin-top:10px">';
+      html+='<button type="button" class="gray" data-user="'+escapeHtmlTak(u.username)+'" onclick="editAppUser(this.dataset.user)">ویرایش</button>';
+      html+='<button type="button" class="redbtn" data-user="'+escapeHtmlTak(u.username)+'" onclick="toggleAppUser(this.dataset.user,false)">حذف</button>';
+      html+='</div>';
+    }else{
+      html+='<div class="small" style="margin-top:8px">کاربر اصلی سیستم؛ رمز از بخش رمز ورود آفلاین تغییر می‌کند.</div>';
+    }
+    html+='</div>';
+  });
+  html+='</div>';
+  box.innerHTML=html;
+}
 function getUserPermsFromForm(){
-  return {calc:document.getElementById("perm_calc").checked,products:document.getElementById("perm_products").checked,price_list:document.getElementById("perm_price_list").checked,print:document.getElementById("perm_print").checked,download:document.getElementById("perm_download").checked,materials:document.getElementById("perm_materials").checked,groups:document.getElementById("perm_groups").checked,settings:document.getElementById("perm_settings").checked,users:document.getElementById("perm_users").checked};
+  return {
+    calc:document.getElementById("perm_calc").checked,
+    products:document.getElementById("perm_products").checked,
+    price_list:document.getElementById("perm_price_list").checked,
+    print:document.getElementById("perm_print").checked,
+    download:document.getElementById("perm_download").checked,
+    materials:document.getElementById("perm_materials").checked,
+    groups:document.getElementById("perm_groups").checked,
+    settings:document.getElementById("perm_settings").checked,
+    users:document.getElementById("perm_users").checked
+  };
 }
 function setUserPermsForm(p){
   p=p||{}; if(typeof p==="string"){try{p=JSON.parse(p)}catch(e){p={}}}
-  ["calc","products","price_list","print","download","materials","groups","settings","users"].forEach(function(k){var el=document.getElementById("perm_"+k); if(el)el.checked=p[k]===true;});
+  ["calc","products","price_list","print","download","materials","groups","settings","users"].forEach(function(k){
+    var el=document.getElementById("perm_"+k); if(el)el.checked=p[k]===true;
+  });
 }
 function clearUserForm(){
   ["newUsername","newPassword","newFullName"].forEach(function(id){var el=document.getElementById(id); if(el)el.value=""});
   var role=document.getElementById("newRole"); if(role)role.value="sales";
-  setUserPermsForm({products:true,price_list:true,print:true,download:true});
-  sessionStorage.removeItem("tak_edit_user_id");
+  setUserPermsForm({products:true,price_list:true});
+  sessionStorage.removeItem("tak_edit_username");
 }
-async function editAppUser(id){alert("این نسخه کاملاً آفلاین است.")}
-async function saveAppUser(){alert("این نسخه کاملاً آفلاین است؛ تعریف کاربر سرور غیرفعال است.")}
-async function toggleAppUser(id,active){alert("این نسخه کاملاً آفلاین است.")}
+function editAppUser(username){
+  var users=getOfflineUsers();
+  var u=users.find(function(x){return x.username===username;});
+  if(!u)return;
+  document.getElementById("newUsername").value=u.username||"";
+  document.getElementById("newPassword").value=u.password||"";
+  document.getElementById("newFullName").value=u.full_name||"";
+  document.getElementById("newRole").value=u.role||"sales";
+  setUserPermsForm(u.permissions||{});
+  sessionStorage.setItem("tak_edit_username",u.username);
+  document.getElementById("newUsername").scrollIntoView({behavior:"smooth",block:"center"});
+}
+function saveAppUser(){
+  if(currentUser && currentUser.role!=="admin" && !hasPerm("users")){
+    alert("شما دسترسی تعریف کاربر ندارید");return;
+  }
+  var username=(document.getElementById("newUsername").value||"").trim();
+  var password=(document.getElementById("newPassword").value||"").trim();
+  var fullName=(document.getElementById("newFullName").value||"").trim();
+  var role=document.getElementById("newRole").value||"sales";
+  if(!username){alert("نام کاربری را وارد کن");return;}
+  if(username==="admin"){alert("کاربر admin از بخش رمز ورود آفلاین مدیریت می‌شود.");return;}
+  if(!password){alert("رمز عبور را وارد کن");return;}
+
+  var users=getOfflineUsers();
+  var existing=users.find(function(u){return u.username===username;});
+  var data={id:existing?existing.id:("local-"+Date.now()),username:username,password:password,full_name:fullName||username,role:role,active:true,permissions:getUserPermsFromForm()};
+  if(existing){Object.assign(existing,data);}else{users.push(data);}
+  setOfflineUsers(users);
+  renderUsersList();
+  clearUserForm();
+  alert("کاربر ذخیره شد.");
+}
+function toggleAppUser(username,active){
+  if(username==="admin"){alert("کاربر admin قابل حذف نیست.");return;}
+  if(active===false && !confirm("این کاربر حذف شود؟"))return;
+  var users=getOfflineUsers();
+  if(active===false){
+    users=users.filter(function(u){return u.username!==username;});
+  }else{
+    users=users.map(function(u){if(u.username===username)u.active=active;return u;});
+  }
+  setOfflineUsers(users);
+  renderUsersList();
+}
 
 var calcResultValid=false;
 var lastCalculatedProductName="";
@@ -2735,25 +2871,95 @@ function initTakBackupSystem(){
 
 
 <script>
-/* ===== TAK OFFLINE USERS FIX V2 ===== */
-function takHtmlEscape(s){
-  return String(s || "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;");
+/* ===== TAK ADMIN PASSWORD FINAL FIX ===== */
+function getOfflineAdminPassword(){
+  return localStorage.getItem("tak_offline_admin_password") || "1234";
 }
 
+function setOfflineAdminPassword(newPass){
+  localStorage.setItem("tak_offline_admin_password", String(newPass || ""));
+
+  try{
+    var raw = localStorage.getItem("tak_offline_users");
+    var users = raw ? JSON.parse(raw) : [];
+    var found = false;
+    users = users.map(function(u){
+      if(u.username === "admin"){
+        found = true;
+        u.password = String(newPass || "");
+        u.full_name = u.full_name || "مدیر آفلاین";
+        u.role = "admin";
+        u.active = true;
+        u.permissions = {calc:true,products:true,price_list:true,print:true,download:true,materials:true,groups:true,settings:true,users:true};
+      }
+      return u;
+    });
+    if(!found){
+      users.unshift({
+        id:"local-admin",
+        username:"admin",
+        password:String(newPass || ""),
+        full_name:"مدیر آفلاین",
+        role:"admin",
+        active:true,
+        permissions:{calc:true,products:true,price_list:true,print:true,download:true,materials:true,groups:true,settings:true,users:true}
+      });
+    }
+    localStorage.setItem("tak_offline_users", JSON.stringify(users));
+  }catch(e){}
+}
+
+function changeOfflinePassword(){
+  var current = getOfflineAdminPassword();
+
+  var oldPass = prompt("رمز فعلی ادمین را وارد کن:");
+  if(oldPass === null)return;
+  if(String(oldPass) !== String(current)){
+    alert("رمز فعلی اشتباه است.");
+    return;
+  }
+
+  var newPass = prompt("رمز جدید ادمین را وارد کن:");
+  if(newPass === null)return;
+  newPass = String(newPass).trim();
+
+  if(newPass.length < 4){
+    alert("رمز جدید حداقل باید ۴ کاراکتر باشد.");
+    return;
+  }
+
+  var repeat = prompt("رمز جدید را دوباره وارد کن:");
+  if(repeat === null)return;
+  if(String(repeat).trim() !== newPass){
+    alert("تکرار رمز با رمز جدید یکسان نیست.");
+    return;
+  }
+
+  setOfflineAdminPassword(newPass);
+  alert("رمز ادمین با موفقیت تغییر کرد.");
+  try{ renderUsersList(); }catch(e){}
+}
+
+/* Ensure admin always exists and cannot be removed */
 function getOfflineUsers(){
   var raw = localStorage.getItem("tak_offline_users");
   var users = [];
   try{ users = raw ? JSON.parse(raw) : []; }catch(e){ users = []; }
 
-  var adminPass = (typeof getOfflineAdminPassword === "function")
-    ? getOfflineAdminPassword()
-    : (localStorage.getItem("tak_offline_admin_password") || "1234");
+  var adminPass = getOfflineAdminPassword();
+  var hasAdmin = false;
 
-  var hasAdmin = users.some(function(u){ return u.username === "admin"; });
+  users = users.map(function(u){
+    if(u.username === "admin"){
+      hasAdmin = true;
+      u.password = adminPass;
+      u.full_name = u.full_name || "مدیر آفلاین";
+      u.role = "admin";
+      u.active = true;
+      u.permissions = {calc:true,products:true,price_list:true,print:true,download:true,materials:true,groups:true,settings:true,users:true};
+    }
+    return u;
+  });
 
   if(!hasAdmin){
     users.unshift({
@@ -2763,23 +2969,7 @@ function getOfflineUsers(){
       full_name:"مدیر آفلاین",
       role:"admin",
       active:true,
-      permissions:{
-        calc:true,products:true,price_list:true,print:true,download:true,
-        materials:true,groups:true,settings:true,users:true
-      }
-    });
-  }else{
-    users = users.map(function(u){
-      if(u.username === "admin"){
-        u.password = adminPass;
-        u.role = "admin";
-        u.active = true;
-        u.permissions = {
-          calc:true,products:true,price_list:true,print:true,download:true,
-          materials:true,groups:true,settings:true,users:true
-        };
-      }
-      return u;
+      permissions:{calc:true,products:true,price_list:true,print:true,download:true,materials:true,groups:true,settings:true,users:true}
     });
   }
 
@@ -2788,17 +2978,29 @@ function getOfflineUsers(){
 }
 
 function setOfflineUsers(users){
-  localStorage.setItem("tak_offline_users", JSON.stringify(users || []));
+  users = users || [];
+  users = users.filter(function(u){ return u.username !== "admin"; });
+  users.unshift({
+    id:"local-admin",
+    username:"admin",
+    password:getOfflineAdminPassword(),
+    full_name:"مدیر آفلاین",
+    role:"admin",
+    active:true,
+    permissions:{calc:true,products:true,price_list:true,print:true,download:true,materials:true,groups:true,settings:true,users:true}
+  });
+  localStorage.setItem("tak_offline_users", JSON.stringify(users));
 }
 
-function getUserPermsFromForm(){
-  var names = ["calc","products","price_list","print","download","materials","groups","settings","users"];
-  var p = {};
-  names.forEach(function(k){
-    var el = document.getElementById("perm_" + k);
-    p[k] = !!(el && el.checked);
-  });
-  return p;
+function deleteOfflineUser(username){
+  if(username === "admin"){
+    alert("کاربر admin قابل حذف نیست. فقط رمز آن را می‌توان تغییر داد.");
+    return;
+  }
+  if(!confirm("این کاربر حذف شود؟"))return;
+  var users = getOfflineUsers().filter(function(u){ return u.username !== username; });
+  setOfflineUsers(users);
+  renderUsersList();
 }
 
 function saveAppUser(){
@@ -2807,20 +3009,34 @@ function saveAppUser(){
     return;
   }
 
-  var username = (document.getElementById("newUsername")?.value || "").trim();
-  var password = (document.getElementById("newPassword")?.value || "").trim();
-  var fullName = (document.getElementById("newFullName")?.value || "").trim();
-  var role = document.getElementById("newRole")?.value || "sales";
+  var username = (document.getElementById("newUsername") ? document.getElementById("newUsername").value : "").trim();
+  var password = (document.getElementById("newPassword") ? document.getElementById("newPassword").value : "").trim();
+  var fullName = (document.getElementById("newFullName") ? document.getElementById("newFullName").value : "").trim();
+  var role = document.getElementById("newRole") ? document.getElementById("newRole").value : "sales";
 
   if(!username){ alert("نام کاربری را وارد کن"); return; }
+
   if(username === "admin"){
-    alert("کاربر admin از بخش رمز ورود آفلاین مدیریت می‌شود.");
+    alert("کاربر admin قابل حذف یا ویرایش از این فرم نیست. برای تغییر رمز از بخش «رمز ادمین» در تنظیمات مدیر استفاده کن.");
     return;
   }
+
   if(!password){ alert("رمز عبور را وارد کن"); return; }
 
   var users = getOfflineUsers();
   var existing = users.find(function(u){ return u.username === username; });
+
+  var permissions = {
+    calc: !!document.getElementById("perm_calc")?.checked,
+    products: !!document.getElementById("perm_products")?.checked,
+    price_list: !!document.getElementById("perm_price_list")?.checked,
+    print: !!document.getElementById("perm_print")?.checked,
+    download: !!document.getElementById("perm_download")?.checked,
+    materials: !!document.getElementById("perm_materials")?.checked,
+    groups: !!document.getElementById("perm_groups")?.checked,
+    settings: !!document.getElementById("perm_settings")?.checked,
+    users: !!document.getElementById("perm_users")?.checked
+  };
 
   var data = {
     id: existing ? existing.id : ("local-" + Date.now()),
@@ -2829,177 +3045,17 @@ function saveAppUser(){
     full_name: fullName || username,
     role: role,
     active: true,
-    permissions: getUserPermsFromForm()
+    permissions: permissions
   };
 
-  if(existing){
-    Object.assign(existing, data);
-  }else{
-    users.push(data);
-  }
+  if(existing){ Object.assign(existing, data); }
+  else{ users.push(data); }
 
   setOfflineUsers(users);
-  renderUsersList();
-  clearUserForm();
+  try{ renderUsersList(); }catch(e){}
+  try{ clearUserForm(); }catch(e){}
   alert("کاربر به‌صورت آفلاین ذخیره شد.");
 }
-
-function renderUsersList(){
-  var box = document.getElementById("usersList");
-  if(!box)return;
-
-  var users = getOfflineUsers();
-  if(!users.length){
-    box.innerHTML = "هنوز کاربری ثبت نشده است.";
-    return;
-  }
-
-  var permNames = {
-    calc:"محاسبه قیمت",
-    products:"بانک محصولات",
-    price_list:"لیست قیمت",
-    print:"چاپ",
-    download:"دانلود",
-    materials:"قیمت مواد",
-    groups:"گروه ضخامت",
-    settings:"تنظیمات",
-    users:"کاربران"
-  };
-
-  var html = '<div class="users-cards">';
-
-  users.forEach(function(u){
-    var p = u.permissions || {};
-    var badges = Object.keys(permNames).map(function(k){
-      return '<span class="badge '+(p[k] ? '' : 'off')+'">'+permNames[k]+'</span>';
-    }).join("");
-
-    var safeUsername = takHtmlEscape(u.username);
-
-    html += '<div class="user-card">';
-    html += '<div class="user-card-head">';
-    html += '<div><div class="user-card-name">'+takHtmlEscape(u.full_name || u.username)+'</div>';
-    html += '<div class="small">'+takHtmlEscape(u.username)+' | '+takHtmlEscape(u.role || "")+'</div></div>';
-    html += '<span class="badge">'+(u.active === false ? "غیرفعال" : "فعال")+'</span>';
-    html += '</div>';
-    html += '<div>'+badges+'</div>';
-
-    if(u.username !== "admin"){
-      html += '<div class="user-row-actions" style="margin-top:10px">';
-      html += '<button type="button" class="gray" onclick="editOfflineUser(&quot;'+safeUsername+'&quot;)">ویرایش</button>';
-      html += '<button type="button" class="redbtn" onclick="deleteOfflineUser(&quot;'+safeUsername+'&quot;)">حذف</button>';
-      html += '</div>';
-    }else{
-      html += '<div class="small" style="margin-top:8px">کاربر اصلی سیستم؛ رمز از تنظیمات مدیر تغییر می‌کند.</div>';
-    }
-
-    html += '</div>';
-  });
-
-  html += '</div>';
-  box.innerHTML = html;
-}
-
-function editOfflineUser(username){
-  var users = getOfflineUsers();
-  var u = users.find(function(x){ return x.username === username; });
-  if(!u)return;
-
-  document.getElementById("newUsername").value = u.username || "";
-  document.getElementById("newPassword").value = u.password || "";
-  document.getElementById("newFullName").value = u.full_name || "";
-  document.getElementById("newRole").value = u.role || "sales";
-
-  var p = u.permissions || {};
-  ["calc","products","price_list","print","download","materials","groups","settings","users"].forEach(function(k){
-    var el = document.getElementById("perm_" + k);
-    if(el)el.checked = !!p[k];
-  });
-
-  document.getElementById("newUsername").scrollIntoView({behavior:"smooth", block:"center"});
-}
-
-function deleteOfflineUser(username){
-  if(username === "admin")return;
-  if(!confirm("این کاربر حذف شود؟"))return;
-
-  var users = getOfflineUsers().filter(function(u){
-    return u.username !== username;
-  });
-
-  setOfflineUsers(users);
-  renderUsersList();
-}
-
-function clearUserForm(){
-  ["newUsername","newPassword","newFullName"].forEach(function(id){
-    var el = document.getElementById(id);
-    if(el)el.value = "";
-  });
-
-  var role = document.getElementById("newRole");
-  if(role)role.value = "sales";
-
-  ["calc","products","price_list","print","download","materials","groups","settings","users"].forEach(function(k){
-    var el = document.getElementById("perm_" + k);
-    if(el)el.checked = (k === "products" || k === "price_list");
-  });
-}
-
-async function loginApp(){
-  var u = (document.getElementById("loginUsername").value || "").trim();
-  var p = (document.getElementById("loginPassword").value || "").trim();
-
-  var err = document.getElementById("loginError");
-  if(err){ err.style.display = "none"; err.textContent = ""; }
-
-  if(!u || !p){
-    showLoginError("نام کاربری و رمز را وارد کن");
-    return false;
-  }
-
-  var users = getOfflineUsers();
-  var found = users.find(function(x){
-    return x.username === u && String(x.password) === String(p) && x.active !== false;
-  });
-
-  if(found){
-    currentUser = {
-      id: found.id || ("local-" + found.username),
-      username: found.username,
-      full_name: found.full_name || found.username,
-      role: found.role || "sales",
-      active: found.active !== false,
-      offline: true,
-      permissions: found.permissions || {}
-    };
-
-    sessionStorage.setItem("tak_current_user", JSON.stringify(currentUser));
-    afterLogin();
-    return false;
-  }
-
-  showLoginError("نام کاربری یا رمز عبور اشتباه است.");
-  setLoginStatus("اپلیکیشن در حالت آفلاین است");
-  return false;
-}
-
-var _takOldShowTabForUsers = window.showTab;
-window.showTab = function(tab){
-  var result = _takOldShowTabForUsers ? _takOldShowTabForUsers(tab) : undefined;
-  if(tab === "users"){
-    renderUsersList();
-  }
-  return result;
-};
-
-window.addEventListener("load", function(){
-  try{
-    if(document.getElementById("usersList")){
-      renderUsersList();
-    }
-  }catch(e){}
-});
 </script>
 
 </body>
