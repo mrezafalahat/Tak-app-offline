@@ -200,7 +200,6 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 <button type="button" class="drawer-btn" id="btn_calc" onclick="showTab('calc');closeDrawer()">محاسبه قیمت</button>
 <button type="button" class="drawer-btn" id="btn_products" onclick="showTab('products');closeDrawer()">بانک محصولات</button>
 <button type="button" class="drawer-btn" id="btn_price_list" onclick="showTab('price_list');closeDrawer()">خروجی لیست قیمت</button>
-<button type="button" class="drawer-btn" id="btn_case_prices" onclick="showTab('case_prices');closeDrawer()">قیمت‌های موردی</button>
 <button type="button" class="drawer-btn" id="btn_free_calc" onclick="showTab('free_calc');closeDrawer()">محاسبه آزاد</button>
 <button type="button" class="drawer-btn" id="btn_prices" onclick="showTab('prices');closeDrawer()">قیمت مواد</button>
 <button type="button" class="drawer-btn" id="btn_admin" onclick="showTab('admin');closeDrawer()">تنظیمات مدیر</button>
@@ -234,17 +233,16 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 <div class="title">۲. قیمت چسب و حلال</div>
 
 <div class="grid">
-<div><label>قیمت چسب اورجینال، تومان/کیلو</label><input id="adhPrice" type="text" value="1,000,000" readonly class="readonly-field"></div>
-<div><label>قیمت حلال، تومان/کیلو</label><input id="solventPrice" type="text" value="80,000" readonly class="readonly-field"></div>
+<div><label>قیمت چسب اورجینال، تومان/کیلو</label><input id="adhPrice" class="readonly-field" type="text" value="1,000,000" readonly><button type="button" class="gray" onclick="editOfficialProcessPrice('adhPrice','قیمت چسب اورجینال')">✏️ ویرایش قیمت رسمی</button></div>
+<div><label>قیمت حلال، تومان/کیلو</label><input id="solventPrice" class="readonly-field" type="text" value="80,000" readonly><button type="button" class="gray" onclick="editOfficialProcessPrice('solventPrice','قیمت حلال')">✏️ ویرایش قیمت رسمی</button></div>
 </div>
-<div class="small">قیمت‌ها در محاسبه قیمت رسمی فقط از بخش قیمت مواد خوانده می‌شوند و قابل ویرایش مستقیم نیستند.</div>
 </div>
 
 <div class="section">
 <div class="title">۳. قیمت مرکب</div>
 
 <div class="grid">
-<div><label>قیمت مرکب اورجینال، تومان/کیلو</label><input id="inkPrice" type="text" value="600,000" readonly class="readonly-field"></div>
+<div><label>قیمت مرکب اورجینال، تومان/کیلو</label><input id="inkPrice" class="readonly-field" type="text" value="600,000" readonly><button type="button" class="gray" onclick="editOfficialProcessPrice('inkPrice','قیمت مرکب اورجینال')">✏️ ویرایش قیمت رسمی</button></div>
 <div><label>درصد سطح چاپ</label><input id="calcPrintArea" type="text" value="100" oninput="formatInput(this)"><div class="small">عدد اولیه از تنظیمات مدیر می‌آید؛ اگر اینجا تغییرش بدهی فقط همین محاسبه عوض می‌شود.</div></div>
 </div>
 
@@ -286,21 +284,7 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 </div>
 
 
-<div id="tab_case_prices" class="tab-page" style="display:none">
-<div class="section">
-<div class="title">قیمت‌های موردی</div>
-<div class="small">قیمت‌هایی که هنگام محاسبه به بانک محصولات اضافه نمی‌شوند، اینجا با نام مشتری ذخیره می‌شوند.</div>
-<label>جستجوی مشتری یا محصول</label>
-<input id="casePriceSearch" type="text" placeholder="مثلاً نام مشتری یا PET" oninput="renderCasePrices()">
-<div class="grid no-print">
-<button type="button" class="gray" onclick="renderCasePrices()">🔄 بروزرسانی</button>
-<button type="button" class="redbtn" onclick="clearAllCasePrices()">حذف همه قیمت‌های موردی</button>
-</div>
-<div id="casePricesList"></div>
-</div>
-</div>
-
-
+<!-- منوی قیمت‌های موردی حذف شد؛ آرشیو موردی داخل محاسبه آزاد است. -->
 <div id="tab_free_calc" class="tab-page" style="display:none">
 <div class="section">
 <div class="title">محاسبه آزاد</div>
@@ -377,7 +361,7 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 <div class="title">بانک محصولات ذخیره‌شده</div>
 <label>جستجوی محصول</label>
 <input id="productSearch" type="text" placeholder="مثلاً PET یا ALU یا PE60" oninput="renderProductList()">
-<div class="small">قیمت‌های بانک محصولات بر اساس قیمت‌های رسمی مواد و تنظیمات فعلی مدیر محاسبه می‌شوند. برای قیمت‌های موردی از محاسبه آزاد استفاده کنید.</div>
+<div class="small">قیمت‌های جدول با قیمت‌های رسمی مواد و تنظیمات فعلی مدیر محاسبه می‌شوند. برای قیمت موردی از محاسبه آزاد استفاده کنید.</div>
 <div class="grid no-print">
 <button type="button" class="printbtn requires-download" onclick="printSalesPriceList()">⬇️ دانلود فایل لیست فروش</button>
 <button type="button" class="gray requires-print" onclick="openSalesPriceList()">🖨️ نمایش / چاپ لیست</button>
@@ -626,7 +610,6 @@ function canAccessTab(tab){
   if(tab==="calc")return hasPerm("calc");
   if(tab==="products")return hasPerm("products");
   if(tab==="price_list")return hasPerm("price_list");
-  if(tab==="case_prices")return hasPerm("price_list") || hasPerm("products") || hasPerm("calc");
   if(tab==="free_calc")return hasPerm("calc");
   if(tab==="prices")return hasPerm("materials");
   if(tab==="admin")return hasPerm("settings");
@@ -637,12 +620,12 @@ function getDefaultTab(){
   return "home";
 }
 function getFirstAllowedTab(){
-  var order=["calc","products","price_list","case_prices","free_calc","prices","admin","users"];
+  var order=["calc","products","price_list","free_calc","prices","admin","users"];
   for(var i=0;i<order.length;i++){if(canAccessTab(order[i]))return order[i];}
   return "home";
 }
 function applyPermissionsToMenu(){
-  ["home","calc","products","price_list","case_prices","free_calc","prices","admin","users"].forEach(function(tab){
+  ["home","calc","products","price_list","free_calc","prices","admin","users"].forEach(function(tab){
     var btn=document.getElementById("btn_"+tab);
     if(btn){btn.style.display=canAccessTab(tab)?"block":"none"}
   });
@@ -677,7 +660,7 @@ function makeOfflineAdmin(){
     role:"admin",
     active:true,
     offline:true,
-    permissions:{calc:true,products:true,price_list:true,case_prices:true,print:true,download:true,materials:true,groups:true,settings:true,users:true}
+    permissions:{calc:true,products:true,price_list:true,print:true,download:true,materials:true,groups:true,settings:true,users:true}
   };
 }
 
@@ -822,7 +805,7 @@ if(b){b.classList.remove("open")}
 }
 
 function tabTitle(tab){
-var names={home:"صفحه اصلی",calc:"محاسبه قیمت",products:"بانک محصولات",price_list:"خروجی لیست قیمت",case_prices:"قیمت‌های موردی",free_calc:"محاسبه آزاد",prices:"قیمت مواد",admin:"تنظیمات مدیر",users:"تعریف کاربر و دسترسی"};
+var names={home:"صفحه اصلی",calc:"محاسبه قیمت",products:"بانک محصولات",price_list:"خروجی لیست قیمت",free_calc:"محاسبه آزاد",prices:"قیمت مواد",admin:"تنظیمات مدیر",users:"تعریف کاربر و دسترسی"};
 return names[tab] || "محاسبه قیمت";
 }
 
@@ -832,7 +815,7 @@ if(!canAccessTab(tab)){
   if(tab!==fallback){alert("شما به این بخش دسترسی ندارید");}
   tab=fallback;
 }
-var tabs=["home","calc","products","price_list","case_prices","free_calc","prices","admin","users"];
+var tabs=["home","calc","products","price_list","free_calc","prices","admin","users"];
 for(var i=0;i<tabs.length;i++){
 var page=document.getElementById("tab_"+tabs[i]);
 var btn=document.getElementById("btn_"+tabs[i]);
@@ -846,7 +829,6 @@ var titleEl=document.getElementById("currentPageTitle");
 if(titleEl){titleEl.innerText=tabTitle(tab)}
 localStorage.setItem("tak_activeTab",tab);
 if(tab==="prices"){renderMaterialEditor();renderPriceManager();}
-if(tab==="case_prices"){renderCasePrices();}
 if(tab==="free_calc"){makeFreeLayers(); loadFreeDefaultsOnce(); renderFreeReports();}
 }
 
@@ -922,7 +904,7 @@ html+=buildMaterialOptions();
 html+='</select></div>';
 
 html+='<div><label>ضخامت، میکرون</label><input id="mic'+i+'" type="text" placeholder="مثلاً 12" oninput="formatInput(this); renderFamilyLayerOptions()"></div>';
-html+='<div><label>قیمت این لایه، تومان/کیلو</label><input id="price'+i+'" type="text" placeholder="از قیمت مواد" readonly class="readonly-field"></div>';
+html+='<div><label>قیمت این لایه، تومان/کیلو</label><input id="price'+i+'" class="readonly-field" type="text" placeholder="از قیمت مواد" readonly><button type="button" class="gray" onclick="editOfficialLayerPrice('+i+')">✏️ ویرایش قیمت رسمی</button></div>';
 html+='<div class="full"><label>موجودی این لایه، کیلوگرم</label><input id="stock'+i+'" type="text" placeholder="مثلاً 1,700" oninput="formatInput(this)"></div>';
 
 html+='</div></div>';
@@ -1355,6 +1337,46 @@ saveForm();
 function applyMasterPricesToCurrentLayers(){
 var n=clean(document.getElementById("layerCount")?document.getElementById("layerCount").value:0);
 for(var i=1;i<=n;i++){applyMaterialPriceToLayer(i)}
+}
+
+function editOfficialLayerPrice(i){
+  if(currentUser && !hasPerm("materials")){alert("دسترسی تغییر قیمت رسمی مواد ندارید");return;}
+  var matEl=document.getElementById("mat"+i);
+  var priceEl=document.getElementById("price"+i);
+  if(!matEl || !priceEl)return;
+  var mat=normalizeCode(matEl.value);
+  var current=clean(priceEl.value);
+  var val=prompt("قیمت رسمی جدید برای "+mat+"، تومان/کیلو", current?fmt(current):"");
+  if(val===null)return;
+  var num=clean(val);
+  if(num<=0){alert("قیمت معتبر وارد کن");return;}
+  var prices=getMasterMaterialPrices();
+  prices[mat]=num;
+  setMasterMaterialPrices(prices);
+  priceEl.value=fmt(num);
+  localStorage.setItem("tak_price"+i,priceEl.value);
+  try{renderPriceManager();renderMaterialEditor();}catch(e){}
+  applyMasterPricesToCurrentLayers();
+  try{refreshAllPrices(false);}catch(e){}
+  try{dbSaveMaterials();}catch(e){}
+  alert("قیمت رسمی "+mat+" آپدیت شد.");
+}
+
+function editOfficialProcessPrice(fieldId,label){
+  if(currentUser && !hasPerm("materials")){alert("دسترسی تغییر قیمت رسمی ندارید");return;}
+  var el=document.getElementById(fieldId);
+  if(!el)return;
+  var current=clean(el.value);
+  var val=prompt(label+" جدید، تومان/کیلو", current?fmt(current):"");
+  if(val===null)return;
+  var num=clean(val);
+  if(num<=0){alert("قیمت معتبر وارد کن");return;}
+  el.value=fmt(num);
+  localStorage.setItem("tak_"+fieldId,el.value);
+  try{renderPriceManager();}catch(e){}
+  try{syncSavedProductsFromGlobalSettings();refreshAllPrices(false);}catch(e){}
+  try{dbSaveSettings();}catch(e){}
+  alert(label+" رسمی آپدیت شد.");
 }
 
 function syncSavedProductsFromMasterPrices(){
@@ -2179,23 +2201,7 @@ if(options.skipSavePrompt){
     var savedName=autoSaveProductAfterCalculate();
     saveMessage='محصول ذخیره / آپدیت شد: '+savedName;
   }else{
-    var customerName=prompt("این قیمت موردی برای کدام مشتری ذخیره شود؟");
-    if(customerName!==null && String(customerName).trim()!==""){
-      saveCasePrice(String(customerName).trim(),{
-        productName:productNameForSave,
-        totalCostKg:totalCostKg,
-        saleKg:saleKg,
-        costM2:costM2,
-        saleM2:saleM2,
-        gross:gross,
-        areaM2:areaM2,
-        finalGsm:f,
-        profit:profit
-      });
-      saveMessage='قیمت موردی برای مشتری ذخیره شد: '+String(customerName).trim();
-    }else{
-      saveMessage='این محاسبه در هیچ لیستی ذخیره نشد.';
-    }
+    saveMessage='این محاسبه ذخیره نشد. برای قیمت موردی از محاسبه آزاد استفاده کنید.';
   }
 }
 
