@@ -132,6 +132,7 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 
 
 .readonly-field{background:#f1f5f9!important;color:#475569!important}
+.add-list-disabled{background:#94a3b8!important;color:white!important;cursor:not-allowed!important;opacity:.85}
 .case-card{background:white;border:1px solid #dbe3ef;border-radius:14px;padding:12px;margin-top:10px}
 .case-card b{color:#082b66}
 .case-meta{font-size:12px;color:#64748b;line-height:1.8;margin-top:6px}
@@ -636,7 +637,7 @@ function getFirstAllowedTab(){
 function applyPermissionsToMenu(){
   ["home","calc","products","price_list","free_calc","prices","admin","users"].forEach(function(tab){
     var btn=document.getElementById("btn_"+tab);
-    if(btn){btn.style.display=canAccessTab(tab)?"block":"none"}
+    if(btn){btn.style.display=(tab==="case_prices")?"none":(canAccessTab(tab)?"block":"none")}
   });
   document.querySelectorAll(".requires-print").forEach(function(el){el.style.display=hasPerm("print")?"block":"none"});
   document.querySelectorAll(".requires-download").forEach(function(el){el.style.display=hasPerm("download")?"block":"none"});
@@ -924,6 +925,7 @@ document.getElementById("layers").innerHTML=html;
 buildAdminLayerSettings(n);
 document.getElementById("analysis").innerHTML="";
 document.getElementById("result").innerHTML="";
+markCalcNeedsRecalculate();
 
 loadForm(true);
 applyMasterPricesToCurrentLayers();
@@ -1340,6 +1342,7 @@ var matEl=document.getElementById("mat"+i);
 var priceEl=document.getElementById("price"+i);
 if(matEl && priceEl && prices[matEl.value]){
 priceEl.value=fmt(prices[matEl.value]);
+markCalcNeedsRecalculate();
 saveForm();
 }
 }
@@ -1410,6 +1413,7 @@ function editOfficialLayerPrice(i){
     applyMasterPricesToCurrentLayers();
     try{refreshAllPrices(false);}catch(e){}
     try{dbSaveMaterials();}catch(e){}
+    markCalcNeedsRecalculate();
     alert("قیمت رسمی "+mat+" آپدیت شد.");
   });
 }
@@ -1425,6 +1429,7 @@ function editOfficialProcessPrice(fieldId,label){
     try{renderPriceManager();}catch(e){}
     try{syncSavedProductsFromGlobalSettings();refreshAllPrices(false);}catch(e){}
     try{dbSaveSettings();}catch(e){}
+    markCalcNeedsRecalculate();
     alert(label+" رسمی آپدیت شد.");
   });
 }
@@ -1469,6 +1474,7 @@ if(changed){setProducts(products);renderProductList()}
 
 function handleFieldChange(el){
 if(!el || !el.id)return;
+if(el.id!=="productSearch" && el.id.indexOf("free")!==0 && el.id!=="casePriceSearch" && el.id!=="freeReportSearch"){markCalcNeedsRecalculate();}
 if(el.id==="printArea"){updateCalcPrintAreaField();}
 if(isMaterialPriceId(el.id)){
 saveMasterMaterialPrices(false);
@@ -1519,6 +1525,7 @@ function editOfficialCalcSetting(adminFieldId,calcFieldId,label,suffix){
     localStorage.setItem("tak_"+adminFieldId,shown);
     try{syncSavedProductsFromGlobalSettings();refreshAllPrices(false);}catch(e){}
     try{dbSaveSettings();}catch(e){}
+    markCalcNeedsRecalculate();
     alert(label+" رسمی آپدیت شد.");
   });
 }
@@ -1639,6 +1646,19 @@ products[name]={name:name,date:new Date().toLocaleString(),data:captureCurrentPr
 setProducts(products);
 renderProductList();
 return name;
+}
+
+function addCalculatedProductToList(){
+  if(!calcResultValid){
+    alert("چون اعداد تغییر کرده‌اند، اول باید دوباره محاسبه قیمت بزنید؛ بعد به لیست اضافه کنید.");
+    return;
+  }
+  var savedName=autoSaveProductAfterCalculate();
+  if(!savedName){alert("محصول برای ذخیره آماده نیست.");return;}
+  calcResultValid=false;
+  var btn=document.getElementById("addCalcToListBtn");
+  if(btn){btn.classList.add("add-list-disabled");btn.textContent="به لیست اضافه شد";}
+  alert("محصول ذخیره / آپدیت شد: "+savedName);
 }
 
 function loadProduct(name){
@@ -2062,6 +2082,10 @@ async function editAppUser(id){alert("این نسخه کاملاً آفلاین 
 async function saveAppUser(){alert("این نسخه کاملاً آفلاین است؛ تعریف کاربر سرور غیرفعال است.")}
 async function toggleAppUser(id,active){alert("این نسخه کاملاً آفلاین است.")}
 
+var calcResultValid=false;
+var lastCalculatedProductName="";
+function markCalcNeedsRecalculate(){calcResultValid=false;}
+
 function analyze(){
 saveForm();
 var data=getLayers();
@@ -2270,23 +2294,13 @@ var saleM2=saleKg*f/1000;
 var orderCost=totalCostKg*gross;
 var totalSale=saleKg*gross;
 
-var saveMessage="";
 var productNameForSave=buildProductName();
-if(options.skipSavePrompt){
-  saveMessage='نمایش محاسبه بدون ذخیره جدید.';
-}else{
-  var addToList=await askAddToProductList();
-  if(addToList){
-    var savedName=autoSaveProductAfterCalculate();
-    saveMessage='محصول ذخیره / آپدیت شد: '+savedName;
-  }else{
-    saveMessage='این محاسبه ذخیره نشد. برای قیمت موردی از محاسبه آزاد استفاده کنید.';
-  }
-}
+calcResultValid=true;
+lastCalculatedProductName=productNameForSave;
 
 var html='<div class="section"><div class="title">نتیجه قیمت تمام‌شده</div>';
 
-html+='<div class="small green">'+saveMessage+'</div>';
+html+='<div class="small green">محاسبه انجام شد. نتیجه را بررسی کنید؛ سپس در صورت تأیید، دکمه اضافه کردن به لیست را بزنید.</div>';
 
 html+='<div class="summary">';
 html+='<div>قیمت تمام‌شده هر کیلو<b>'+fmt(totalCostKg)+'</b></div>';
@@ -2340,7 +2354,10 @@ html+='<div>کل هزینه سفارش<b>'+fmt(orderCost)+'</b></div>';
 html+='<div>کل فروش پیشنهادی<b>'+fmt(totalSale)+'</b></div>';
 html+='<div>سود ناخالص<b>'+fmt(totalSale-orderCost)+'</b></div>';
 html+='<div>مازاد درصدی<b>'+fmt1(extraPercent)+'%</b></div>';
+html+='<div>سود پیشنهادی<b>'+fmt1(profit)+'%</b></div>';
 html+='</div>';
+
+html+='<button type="button" id="addCalcToListBtn" onclick="addCalculatedProductToList()">اضافه کردن به لیست قیمت / بانک محصولات</button>';
 
 html+='</div>';
 
