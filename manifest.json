@@ -1,13 +1,11 @@
 {
   "name": "TAK Cost Calculator",
-  "short_name": "TAK Cost",
-  "start_url": "./index.html",
-  "scope": "./",
+  "short_name": "TAK",
+  "start_url": ".",
   "display": "standalone",
-  "background_color": "#eef3fb",
-  "theme_color": "#082b66",
-  "dir": "rtl",
-  "lang": "fa",
+  "background_color": "#f4f8ff",
+  "theme_color": "#2459d6",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "icon-192.png",

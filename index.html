@@ -157,7 +157,378 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 #backupHint{font-size:11px;color:#b45309;background:#fff7ed;border:1px solid #fed7aa;border-radius:999px;padding:5px 8px;display:none;white-space:nowrap}
 @media(max-width:650px){.topbar{flex-wrap:wrap}.backup-actions{order:3;width:100%;display:grid;grid-template-columns:1fr 1fr}.backup-actions button{width:100%}#backupHint{grid-column:1/-1;text-align:center}}
 
+
+/* =========================================================
+   TAK UI REFRESH - BLUE/WHITE MOBILE APP STYLE
+   فقط ظاهر برنامه است؛ محاسبات و منطق JS تغییر نکرده‌اند.
+   ========================================================= */
+:root{
+  --tak-blue:#2459d6;
+  --tak-blue-2:#0f46c7;
+  --tak-blue-3:#3f73f6;
+  --tak-navy:#081d4d;
+  --tak-bg:#f4f8ff;
+  --tak-card:#ffffff;
+  --tak-line:#dbe6fb;
+  --tak-soft:#eef4ff;
+  --tak-text:#07183f;
+  --tak-muted:#6b7892;
+  --tak-green:#18a85b;
+  --tak-red:#ef3b3b;
+  --tak-yellow:#ffd23f;
+  --tak-shadow:0 10px 30px rgba(36,89,214,.10);
+  --tak-shadow-soft:0 6px 18px rgba(15,23,42,.07);
+}
+
+*{box-sizing:border-box}
+html{background:var(--tak-bg)}
+body{
+  margin:0!important;
+  background:
+    radial-gradient(circle at top right, rgba(63,115,246,.16), transparent 35%),
+    linear-gradient(180deg,#eef5ff 0%,#f7faff 45%,#eef4ff 100%)!important;
+  color:var(--tak-text)!important;
+  font-family:Tahoma,Arial,sans-serif!important;
+  padding:0!important;
+  min-height:100vh;
+}
+
+.app{
+  max-width:1120px!important;
+  min-height:100vh;
+  margin:auto!important;
+  background:transparent!important;
+  border-radius:0!important;
+  padding:0 12px 96px!important;
+  box-shadow:none!important;
+}
+
+/* Header / top app bar */
+.header{
+  position:sticky;
+  top:0;
+  z-index:80;
+  margin:0 -12px 0!important;
+  padding:18px 16px 20px!important;
+  border-radius:0 0 24px 24px!important;
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  box-shadow:0 10px 28px rgba(36,89,214,.25)!important;
+  color:white!important;
+  text-align:right!important;
+}
+.header h1{
+  margin:0!important;
+  font-size:20px!important;
+  font-weight:900!important;
+  letter-spacing:.2px;
+}
+.header h1:before{
+  content:"TAK";
+  display:inline-block;
+  margin-left:10px;
+  color:#fff;
+  font-size:27px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+.header h1:after{
+  content:"";
+  display:inline-block;
+  width:7px;height:7px;
+  background:var(--tak-yellow);
+  border-radius:50%;
+  margin-right:8px;
+  vertical-align:middle;
+}
+.user-chip{
+  color:#dbe8ff!important;
+  font-size:11px!important;
+  margin-top:5px!important;
+}
+
+/* Topbar */
+.topbar{
+  position:sticky;
+  top:74px;
+  z-index:70;
+  margin:12px 0 14px!important;
+  padding:10px!important;
+  background:rgba(255,255,255,.88)!important;
+  backdrop-filter:blur(14px);
+  border:1px solid var(--tak-line)!important;
+  border-radius:22px!important;
+  box-shadow:var(--tak-shadow-soft)!important;
+}
+.menu-toggle{
+  width:46px!important;
+  height:46px!important;
+  border-radius:15px!important;
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  box-shadow:0 8px 20px rgba(36,89,214,.25)!important;
+}
+.current-page-title{
+  color:var(--tak-navy)!important;
+  font-size:15px!important;
+  font-weight:900!important;
+}
+.db-status{
+  background:#f1f6ff;
+  border:1px solid var(--tak-line);
+  padding:7px 9px;
+  border-radius:999px;
+}
+
+/* Drawer */
+.drawer{
+  background:linear-gradient(180deg,#ffffff,#f5f8ff)!important;
+  border-radius:26px 0 0 26px!important;
+  padding:14px!important;
+  box-shadow:-18px 0 45px rgba(7,24,63,.24)!important;
+}
+.drawer-head{
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  border-radius:22px!important;
+  box-shadow:0 10px 25px rgba(36,89,214,.20);
+}
+.drawer-btn{
+  background:white!important;
+  color:var(--tak-navy)!important;
+  border:1px solid var(--tak-line)!important;
+  box-shadow:0 3px 12px rgba(15,23,42,.04);
+  border-radius:16px!important;
+  font-weight:800!important;
+}
+.drawer-btn.active{
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  color:white!important;
+  border-color:transparent!important;
+}
+.drawer-btn.logout{
+  background:#fff1f1!important;
+  color:#b91c1c!important;
+  border-color:#ffd4d4!important;
+}
+
+/* Sections / cards */
+.section{
+  background:rgba(255,255,255,.96)!important;
+  border:1px solid var(--tak-line)!important;
+  border-radius:24px!important;
+  padding:16px!important;
+  margin-top:14px!important;
+  box-shadow:var(--tak-shadow)!important;
+}
+.title{
+  color:var(--tak-navy)!important;
+  font-size:18px!important;
+  font-weight:900!important;
+  margin-bottom:14px!important;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.title:before{
+  content:"";
+  width:5px;
+  height:22px;
+  background:linear-gradient(180deg,var(--tak-blue),var(--tak-blue-3));
+  border-radius:99px;
+  margin-left:8px;
+  display:inline-block;
+}
+.small{
+  color:var(--tak-muted)!important;
+  font-size:12px!important;
+  line-height:1.9!important;
+}
+.card,
+.product-item,
+.case-card,
+.user-card,
+.material-row-clean{
+  background:white!important;
+  border:1px solid var(--tak-line)!important;
+  border-radius:20px!important;
+  box-shadow:var(--tak-shadow-soft)!important;
+}
+
+/* Inputs */
+label{
+  color:var(--tak-text)!important;
+  font-size:12px!important;
+  font-weight:900!important;
+}
+input,select{
+  background:#fbfdff!important;
+  border:1px solid #d9e3f5!important;
+  border-radius:15px!important;
+  color:#07183f!important;
+  font-weight:700;
+  min-height:46px;
+  transition:.18s ease;
+}
+input:focus,select:focus{
+  outline:none!important;
+  border-color:var(--tak-blue)!important;
+  box-shadow:0 0 0 4px rgba(36,89,214,.10)!important;
+}
+.readonly-field{
+  background:#f0f5ff!important;
+  color:#59677f!important;
+}
+
+/* Buttons */
+button{
+  border-radius:16px!important;
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  box-shadow:0 8px 20px rgba(36,89,214,.22)!important;
+  color:white!important;
+  font-weight:900!important;
+  min-height:46px;
+}
+button.gray{
+  background:#eef4ff!important;
+  color:var(--tak-blue-2)!important;
+  border:1px solid #d3e0fb!important;
+  box-shadow:none!important;
+}
+button.redbtn,.iconbtn{
+  background:#fff1f1!important;
+  color:#dc2626!important;
+  border:1px solid #ffd0d0!important;
+  box-shadow:none!important;
+}
+.printbtn{
+  background:linear-gradient(135deg,#17a45a,#0d8f49)!important;
+}
+
+/* Summary / KPI cards */
+.summary{
+  gap:12px!important;
+}
+.summary div{
+  background:white!important;
+  border:1px solid var(--tak-line)!important;
+  border-radius:22px!important;
+  padding:18px 10px!important;
+  box-shadow:var(--tak-shadow-soft)!important;
+}
+.summary div:nth-child(1){background:linear-gradient(180deg,#fff,#f6f9ff)!important}
+.summary b{
+  color:var(--tak-blue-2)!important;
+  font-size:25px!important;
+  font-weight:900!important;
+}
+
+/* Tables */
+.table-wrap{
+  border:1px solid var(--tak-line)!important;
+  border-radius:20px!important;
+  overflow:hidden!important;
+  box-shadow:var(--tak-shadow-soft)!important;
+}
+table{
+  font-size:10px!important;
+  background:white!important;
+}
+th{
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  color:white!important;
+  padding:9px 4px!important;
+  font-weight:900!important;
+}
+td{
+  border-color:#e5edf9!important;
+  padding:8px 4px!important;
+  color:#132143;
+}
+table tbody tr:nth-child(even):not(.family-head) td{background:#f7faff!important}
+table tbody tr:nth-child(odd):not(.family-head) td{background:#fff!important}
+tr.family-head td{
+  background:#eaf2ff!important;
+  color:var(--tak-blue-2)!important;
+}
+
+/* Price/material rows */
+.material-row-clean{
+  padding:12px!important;
+}
+.mat-title-input{
+  border:0!important;
+  background:#f4f8ff!important;
+  color:var(--tak-blue-2)!important;
+}
+.mat-saved{color:var(--tak-green)!important}
+
+/* Login */
+.login-screen{
+  background:linear-gradient(135deg,var(--tak-blue),#f4f8ff)!important;
+}
+.login-card{
+  border-radius:30px!important;
+  border:1px solid rgba(255,255,255,.65)!important;
+  box-shadow:0 25px 80px rgba(7,24,63,.22)!important;
+}
+.login-logo{
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  border-radius:24px!important;
+}
+
+/* Bottom mobile navigation feeling */
+@media(max-width:650px){
+  body{padding:0!important}
+  .app{padding:0 10px 94px!important}
+  .header{
+    padding:18px 16px!important;
+    border-radius:0 0 24px 24px!important;
+  }
+  .header h1{font-size:17px!important}
+  .header h1:before{font-size:24px}
+  .topbar{
+    top:66px;
+    border-radius:18px!important;
+    gap:6px!important;
+  }
+  .backup-actions{
+    background:#f4f8ff;
+    border-radius:16px;
+    padding:7px;
+  }
+  .grid,.summary{
+    grid-template-columns:1fr!important;
+  }
+  .section{
+    padding:14px!important;
+    border-radius:22px!important;
+  }
+  table{font-size:8px!important}
+  th,td{padding:7px 2px!important}
+  button{font-size:14px!important}
+  .drawer{
+    width:300px!important;
+    max-width:86vw!important;
+  }
+}
+
+/* Wider screens: make forms breathe */
+@media(min-width:900px){
+  .grid{
+    grid-template-columns:1fr 1fr!important;
+  }
+  #layers{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+  }
+  #layers .card{margin-top:0!important}
+}
+
 </style>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2459d6">
+<link rel="apple-touch-icon" href="icon-192.png">
+
 </head>
 
 <body onload="bootApp()">
@@ -2031,13 +2402,393 @@ if(withActions && hasPerm("download")){actionParts.push('<button class="download
 if(withActions){actionParts.push('<button class="back" onclick="window.close();if(history.length>1){history.back()}">بازگشت</button>');}
 var actions = withActions ? '<div class="print-actions">'+actionParts.join('')+'</div>' : '';
 return '<!DOCTYPE html><html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><title>Price List</title>'+ 
-'<style>*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important;box-sizing:border-box}body{font-family:Tahoma,Arial;margin:24px;color:#172033;background:white}h1{text-align:center;color:#082b66;margin:0 0 6px;font-size:28px}.meta{text-align:center;margin-bottom:18px;color:#475569;font-size:12px}.print-actions{display:flex;gap:10px;margin-bottom:18px;direction:rtl;position:sticky;top:0;background:white;padding:10px 0;z-index:5}.print-actions button{border:0;border-radius:12px;padding:11px 18px;font-family:Tahoma;background:#082b66;color:white;font-weight:bold;cursor:pointer}.print-actions .back{background:#64748b}.print-actions .download{background:#15803d}table{width:100%;border-collapse:collapse;font-size:12px;direction:rtl}th{background:#082b66!important;color:white!important;padding:9px;border:1px solid #082b66;text-align:center}td{border:1px solid #cbd5e1;padding:8px;text-align:center;background:white!important}tbody tr:nth-child(even):not(.print-group-row) td{background:#f6f8fb!important}tbody tr:nth-child(odd):not(.print-group-row) td{background:#ffffff!important}.print-group-row td{background:#dbeafe!important;color:#075985!important;font-weight:bold;border-top:2px solid #93c5fd;border-bottom:2px solid #93c5fd;text-align:center}.note{margin-top:18px;font-size:11px;color:#64748b;text-align:center}@media(max-width:650px){body{margin:12px}h1{font-size:22px}.print-actions{display:grid;grid-template-columns:1fr}.print-actions button{width:100%}table{font-size:10px}th,td{padding:7px 4px}}@media print{.print-actions{display:none!important}*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}thead{display:table-header-group}tr{page-break-inside:avoid}}@page{size:A4;margin:12mm}</style></head><body>'+ 
+'<style>*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important;box-sizing:border-box}body{font-family:Tahoma,Arial;margin:24px;color:#172033;background:white}h1{text-align:center;color:#082b66;margin:0 0 6px;font-size:28px}.meta{text-align:center;margin-bottom:18px;color:#475569;font-size:12px}.print-actions{display:flex;gap:10px;margin-bottom:18px;direction:rtl;position:sticky;top:0;background:white;padding:10px 0;z-index:5}.print-actions button{border:0;border-radius:12px;padding:11px 18px;font-family:Tahoma;background:#082b66;color:white;font-weight:bold;cursor:pointer}.print-actions .back{background:#64748b}.print-actions .download{background:#15803d}table{width:100%;border-collapse:collapse;font-size:12px;direction:rtl}th{background:#082b66!important;color:white!important;padding:9px;border:1px solid #082b66;text-align:center}td{border:1px solid #cbd5e1;padding:8px;text-align:center;background:white!important}tbody tr:nth-child(even):not(.print-group-row) td{background:#f6f8fb!important}tbody tr:nth-child(odd):not(.print-group-row) td{background:#ffffff!important}.print-group-row td{background:#dbeafe!important;color:#075985!important;font-weight:bold;border-top:2px solid #93c5fd;border-bottom:2px solid #93c5fd;text-align:center}.note{margin-top:18px;font-size:11px;color:#64748b;text-align:center}@media(max-width:650px){body{margin:12px}h1{font-size:22px}.print-actions{display:grid;grid-template-columns:1fr}.print-actions button{width:100%}table{font-size:10px}th,td{padding:7px 4px}}@media print{.print-actions{display:none!important}*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}thead{display:table-header-group}tr{page-break-inside:avoid}}@page{size:A4;margin:12mm}
+/* =========================================================
+   TAK UI REFRESH - BLUE/WHITE MOBILE APP STYLE
+   فقط ظاهر برنامه است؛ محاسبات و منطق JS تغییر نکرده‌اند.
+   ========================================================= */
+:root{
+  --tak-blue:#2459d6;
+  --tak-blue-2:#0f46c7;
+  --tak-blue-3:#3f73f6;
+  --tak-navy:#081d4d;
+  --tak-bg:#f4f8ff;
+  --tak-card:#ffffff;
+  --tak-line:#dbe6fb;
+  --tak-soft:#eef4ff;
+  --tak-text:#07183f;
+  --tak-muted:#6b7892;
+  --tak-green:#18a85b;
+  --tak-red:#ef3b3b;
+  --tak-yellow:#ffd23f;
+  --tak-shadow:0 10px 30px rgba(36,89,214,.10);
+  --tak-shadow-soft:0 6px 18px rgba(15,23,42,.07);
+}
+
+*{box-sizing:border-box}
+html{background:var(--tak-bg)}
+body{
+  margin:0!important;
+  background:
+    radial-gradient(circle at top right, rgba(63,115,246,.16), transparent 35%),
+    linear-gradient(180deg,#eef5ff 0%,#f7faff 45%,#eef4ff 100%)!important;
+  color:var(--tak-text)!important;
+  font-family:Tahoma,Arial,sans-serif!important;
+  padding:0!important;
+  min-height:100vh;
+}
+
+.app{
+  max-width:1120px!important;
+  min-height:100vh;
+  margin:auto!important;
+  background:transparent!important;
+  border-radius:0!important;
+  padding:0 12px 96px!important;
+  box-shadow:none!important;
+}
+
+/* Header / top app bar */
+.header{
+  position:sticky;
+  top:0;
+  z-index:80;
+  margin:0 -12px 0!important;
+  padding:18px 16px 20px!important;
+  border-radius:0 0 24px 24px!important;
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  box-shadow:0 10px 28px rgba(36,89,214,.25)!important;
+  color:white!important;
+  text-align:right!important;
+}
+.header h1{
+  margin:0!important;
+  font-size:20px!important;
+  font-weight:900!important;
+  letter-spacing:.2px;
+}
+.header h1:before{
+  content:"TAK";
+  display:inline-block;
+  margin-left:10px;
+  color:#fff;
+  font-size:27px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+.header h1:after{
+  content:"";
+  display:inline-block;
+  width:7px;height:7px;
+  background:var(--tak-yellow);
+  border-radius:50%;
+  margin-right:8px;
+  vertical-align:middle;
+}
+.user-chip{
+  color:#dbe8ff!important;
+  font-size:11px!important;
+  margin-top:5px!important;
+}
+
+/* Topbar */
+.topbar{
+  position:sticky;
+  top:74px;
+  z-index:70;
+  margin:12px 0 14px!important;
+  padding:10px!important;
+  background:rgba(255,255,255,.88)!important;
+  backdrop-filter:blur(14px);
+  border:1px solid var(--tak-line)!important;
+  border-radius:22px!important;
+  box-shadow:var(--tak-shadow-soft)!important;
+}
+.menu-toggle{
+  width:46px!important;
+  height:46px!important;
+  border-radius:15px!important;
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  box-shadow:0 8px 20px rgba(36,89,214,.25)!important;
+}
+.current-page-title{
+  color:var(--tak-navy)!important;
+  font-size:15px!important;
+  font-weight:900!important;
+}
+.db-status{
+  background:#f1f6ff;
+  border:1px solid var(--tak-line);
+  padding:7px 9px;
+  border-radius:999px;
+}
+
+/* Drawer */
+.drawer{
+  background:linear-gradient(180deg,#ffffff,#f5f8ff)!important;
+  border-radius:26px 0 0 26px!important;
+  padding:14px!important;
+  box-shadow:-18px 0 45px rgba(7,24,63,.24)!important;
+}
+.drawer-head{
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  border-radius:22px!important;
+  box-shadow:0 10px 25px rgba(36,89,214,.20);
+}
+.drawer-btn{
+  background:white!important;
+  color:var(--tak-navy)!important;
+  border:1px solid var(--tak-line)!important;
+  box-shadow:0 3px 12px rgba(15,23,42,.04);
+  border-radius:16px!important;
+  font-weight:800!important;
+}
+.drawer-btn.active{
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  color:white!important;
+  border-color:transparent!important;
+}
+.drawer-btn.logout{
+  background:#fff1f1!important;
+  color:#b91c1c!important;
+  border-color:#ffd4d4!important;
+}
+
+/* Sections / cards */
+.section{
+  background:rgba(255,255,255,.96)!important;
+  border:1px solid var(--tak-line)!important;
+  border-radius:24px!important;
+  padding:16px!important;
+  margin-top:14px!important;
+  box-shadow:var(--tak-shadow)!important;
+}
+.title{
+  color:var(--tak-navy)!important;
+  font-size:18px!important;
+  font-weight:900!important;
+  margin-bottom:14px!important;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.title:before{
+  content:"";
+  width:5px;
+  height:22px;
+  background:linear-gradient(180deg,var(--tak-blue),var(--tak-blue-3));
+  border-radius:99px;
+  margin-left:8px;
+  display:inline-block;
+}
+.small{
+  color:var(--tak-muted)!important;
+  font-size:12px!important;
+  line-height:1.9!important;
+}
+.card,
+.product-item,
+.case-card,
+.user-card,
+.material-row-clean{
+  background:white!important;
+  border:1px solid var(--tak-line)!important;
+  border-radius:20px!important;
+  box-shadow:var(--tak-shadow-soft)!important;
+}
+
+/* Inputs */
+label{
+  color:var(--tak-text)!important;
+  font-size:12px!important;
+  font-weight:900!important;
+}
+input,select{
+  background:#fbfdff!important;
+  border:1px solid #d9e3f5!important;
+  border-radius:15px!important;
+  color:#07183f!important;
+  font-weight:700;
+  min-height:46px;
+  transition:.18s ease;
+}
+input:focus,select:focus{
+  outline:none!important;
+  border-color:var(--tak-blue)!important;
+  box-shadow:0 0 0 4px rgba(36,89,214,.10)!important;
+}
+.readonly-field{
+  background:#f0f5ff!important;
+  color:#59677f!important;
+}
+
+/* Buttons */
+button{
+  border-radius:16px!important;
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  box-shadow:0 8px 20px rgba(36,89,214,.22)!important;
+  color:white!important;
+  font-weight:900!important;
+  min-height:46px;
+}
+button.gray{
+  background:#eef4ff!important;
+  color:var(--tak-blue-2)!important;
+  border:1px solid #d3e0fb!important;
+  box-shadow:none!important;
+}
+button.redbtn,.iconbtn{
+  background:#fff1f1!important;
+  color:#dc2626!important;
+  border:1px solid #ffd0d0!important;
+  box-shadow:none!important;
+}
+.printbtn{
+  background:linear-gradient(135deg,#17a45a,#0d8f49)!important;
+}
+
+/* Summary / KPI cards */
+.summary{
+  gap:12px!important;
+}
+.summary div{
+  background:white!important;
+  border:1px solid var(--tak-line)!important;
+  border-radius:22px!important;
+  padding:18px 10px!important;
+  box-shadow:var(--tak-shadow-soft)!important;
+}
+.summary div:nth-child(1){background:linear-gradient(180deg,#fff,#f6f9ff)!important}
+.summary b{
+  color:var(--tak-blue-2)!important;
+  font-size:25px!important;
+  font-weight:900!important;
+}
+
+/* Tables */
+.table-wrap{
+  border:1px solid var(--tak-line)!important;
+  border-radius:20px!important;
+  overflow:hidden!important;
+  box-shadow:var(--tak-shadow-soft)!important;
+}
+table{
+  font-size:10px!important;
+  background:white!important;
+}
+th{
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  color:white!important;
+  padding:9px 4px!important;
+  font-weight:900!important;
+}
+td{
+  border-color:#e5edf9!important;
+  padding:8px 4px!important;
+  color:#132143;
+}
+table tbody tr:nth-child(even):not(.family-head) td{background:#f7faff!important}
+table tbody tr:nth-child(odd):not(.family-head) td{background:#fff!important}
+tr.family-head td{
+  background:#eaf2ff!important;
+  color:var(--tak-blue-2)!important;
+}
+
+/* Price/material rows */
+.material-row-clean{
+  padding:12px!important;
+}
+.mat-title-input{
+  border:0!important;
+  background:#f4f8ff!important;
+  color:var(--tak-blue-2)!important;
+}
+.mat-saved{color:var(--tak-green)!important}
+
+/* Login */
+.login-screen{
+  background:linear-gradient(135deg,var(--tak-blue),#f4f8ff)!important;
+}
+.login-card{
+  border-radius:30px!important;
+  border:1px solid rgba(255,255,255,.65)!important;
+  box-shadow:0 25px 80px rgba(7,24,63,.22)!important;
+}
+.login-logo{
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  border-radius:24px!important;
+}
+
+/* Bottom mobile navigation feeling */
+@media(max-width:650px){
+  body{padding:0!important}
+  .app{padding:0 10px 94px!important}
+  .header{
+    padding:18px 16px!important;
+    border-radius:0 0 24px 24px!important;
+  }
+  .header h1{font-size:17px!important}
+  .header h1:before{font-size:24px}
+  .topbar{
+    top:66px;
+    border-radius:18px!important;
+    gap:6px!important;
+  }
+  .backup-actions{
+    background:#f4f8ff;
+    border-radius:16px;
+    padding:7px;
+  }
+  .grid,.summary{
+    grid-template-columns:1fr!important;
+  }
+  .section{
+    padding:14px!important;
+    border-radius:22px!important;
+  }
+  table{font-size:8px!important}
+  th,td{padding:7px 2px!important}
+  button{font-size:14px!important}
+  .drawer{
+    width:300px!important;
+    max-width:86vw!important;
+  }
+}
+
+/* Wider screens: make forms breathe */
+@media(min-width:900px){
+  .grid{
+    grid-template-columns:1fr 1fr!important;
+  }
+  #layers{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+  }
+  #layers .card{margin-top:0!important}
+}
+
+</style>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2459d6">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+</head><body>'+ 
 actions+
 '<h1>Price List</h1><div class="meta">لیست قیمت فروش روزانه - '+getTodayText()+'</div>'+ 
 '<table><tr><th>ردیف</th><th>محصول</th><th>قیمت فروش / کیلو</th></tr>'+rows+'</table>'+ 
 '<div class="note">قیمت‌ها بر اساس نرخ مواد اولیه و تنظیمات فعلی سیستم محاسبه شده‌اند.</div>'+ 
 '<scr'+'ipt>function downloadThisPriceList(){var html="<!DOCTYPE html>"+document.documentElement.outerHTML;var blob=new Blob([html],{type:"text/html;charset=utf-8"});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download="price-list.html";document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url)},300)}<\/scr'+'ipt>'+ 
-'</body></html>';
+'
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('./service-worker.js').catch(function(){});
+  });
+}
+</script>
+
+</body></html>';
 }
 
 function printSalesPriceList(){
@@ -2604,7 +3355,387 @@ function renderFreeReports(){
 function openFreeReport(id){var r=getFreeReports().find(function(x){return Number(x.id)===Number(id)}); if(!r)return; if(r.inputs){applyFreeReportInputs(r.inputs);} document.getElementById("freeResult").innerHTML=(r.inputs?buildFreeReportInputHtml(r):"")+r.html; window.lastFreeCalcResult=r; document.getElementById("freeResult").scrollIntoView({behavior:"smooth",block:"start"});}
 function deleteFreeReport(id){if(!confirm("این گزارش حذف شود؟"))return; setFreeReports(getFreeReports().filter(function(x){return Number(x.id)!==Number(id)})); renderFreeReports();}
 function clearFreeReports(){if(!confirm("همه گزارش‌های محاسبه آزاد حذف شوند؟"))return; setFreeReports([]); renderFreeReports();}
-function printFreeCurrent(){var r=window.lastFreeCalcResult; if(!r){alert("اول محاسبه کن");return;} if(!r.inputs){r.inputs=getFreeReportInputs();} var printable=buildFreeReportInputHtml(r)+r.html; var w=window.open("","_blank"); w.document.write('<html dir="rtl"><head><title>'+escapeHtml(r.name)+'</title><style>body{font-family:Tahoma,Arial;padding:16px}table{width:100%;border-collapse:collapse;font-size:11px}td,th{border:1px solid #999;padding:6px;text-align:center}th{background:#082b66;color:white}.summary{display:grid;grid-template-columns:1fr 1fr;gap:8px}.summary div{border:1px solid #ddd;padding:10px;border-radius:10px}.section{margin-bottom:14px}.title{font-weight:bold;color:#082b66;margin:8px 0}.small{font-size:12px;line-height:1.8}</style></head><body>'+printable.replace(/<button[\s\S]*?<\/button>/g,'')+'</body></html>'); w.document.close(); w.print();}
+function printFreeCurrent(){var r=window.lastFreeCalcResult; if(!r){alert("اول محاسبه کن");return;} if(!r.inputs){r.inputs=getFreeReportInputs();} var printable=buildFreeReportInputHtml(r)+r.html; var w=window.open("","_blank"); w.document.write('<html dir="rtl"><head><title>'+escapeHtml(r.name)+'</title><style>body{font-family:Tahoma,Arial;padding:16px}table{width:100%;border-collapse:collapse;font-size:11px}td,th{border:1px solid #999;padding:6px;text-align:center}th{background:#082b66;color:white}.summary{display:grid;grid-template-columns:1fr 1fr;gap:8px}.summary div{border:1px solid #ddd;padding:10px;border-radius:10px}.section{margin-bottom:14px}.title{font-weight:bold;color:#082b66;margin:8px 0}.small{font-size:12px;line-height:1.8}
+/* =========================================================
+   TAK UI REFRESH - BLUE/WHITE MOBILE APP STYLE
+   فقط ظاهر برنامه است؛ محاسبات و منطق JS تغییر نکرده‌اند.
+   ========================================================= */
+:root{
+  --tak-blue:#2459d6;
+  --tak-blue-2:#0f46c7;
+  --tak-blue-3:#3f73f6;
+  --tak-navy:#081d4d;
+  --tak-bg:#f4f8ff;
+  --tak-card:#ffffff;
+  --tak-line:#dbe6fb;
+  --tak-soft:#eef4ff;
+  --tak-text:#07183f;
+  --tak-muted:#6b7892;
+  --tak-green:#18a85b;
+  --tak-red:#ef3b3b;
+  --tak-yellow:#ffd23f;
+  --tak-shadow:0 10px 30px rgba(36,89,214,.10);
+  --tak-shadow-soft:0 6px 18px rgba(15,23,42,.07);
+}
+
+*{box-sizing:border-box}
+html{background:var(--tak-bg)}
+body{
+  margin:0!important;
+  background:
+    radial-gradient(circle at top right, rgba(63,115,246,.16), transparent 35%),
+    linear-gradient(180deg,#eef5ff 0%,#f7faff 45%,#eef4ff 100%)!important;
+  color:var(--tak-text)!important;
+  font-family:Tahoma,Arial,sans-serif!important;
+  padding:0!important;
+  min-height:100vh;
+}
+
+.app{
+  max-width:1120px!important;
+  min-height:100vh;
+  margin:auto!important;
+  background:transparent!important;
+  border-radius:0!important;
+  padding:0 12px 96px!important;
+  box-shadow:none!important;
+}
+
+/* Header / top app bar */
+.header{
+  position:sticky;
+  top:0;
+  z-index:80;
+  margin:0 -12px 0!important;
+  padding:18px 16px 20px!important;
+  border-radius:0 0 24px 24px!important;
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  box-shadow:0 10px 28px rgba(36,89,214,.25)!important;
+  color:white!important;
+  text-align:right!important;
+}
+.header h1{
+  margin:0!important;
+  font-size:20px!important;
+  font-weight:900!important;
+  letter-spacing:.2px;
+}
+.header h1:before{
+  content:"TAK";
+  display:inline-block;
+  margin-left:10px;
+  color:#fff;
+  font-size:27px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+.header h1:after{
+  content:"";
+  display:inline-block;
+  width:7px;height:7px;
+  background:var(--tak-yellow);
+  border-radius:50%;
+  margin-right:8px;
+  vertical-align:middle;
+}
+.user-chip{
+  color:#dbe8ff!important;
+  font-size:11px!important;
+  margin-top:5px!important;
+}
+
+/* Topbar */
+.topbar{
+  position:sticky;
+  top:74px;
+  z-index:70;
+  margin:12px 0 14px!important;
+  padding:10px!important;
+  background:rgba(255,255,255,.88)!important;
+  backdrop-filter:blur(14px);
+  border:1px solid var(--tak-line)!important;
+  border-radius:22px!important;
+  box-shadow:var(--tak-shadow-soft)!important;
+}
+.menu-toggle{
+  width:46px!important;
+  height:46px!important;
+  border-radius:15px!important;
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  box-shadow:0 8px 20px rgba(36,89,214,.25)!important;
+}
+.current-page-title{
+  color:var(--tak-navy)!important;
+  font-size:15px!important;
+  font-weight:900!important;
+}
+.db-status{
+  background:#f1f6ff;
+  border:1px solid var(--tak-line);
+  padding:7px 9px;
+  border-radius:999px;
+}
+
+/* Drawer */
+.drawer{
+  background:linear-gradient(180deg,#ffffff,#f5f8ff)!important;
+  border-radius:26px 0 0 26px!important;
+  padding:14px!important;
+  box-shadow:-18px 0 45px rgba(7,24,63,.24)!important;
+}
+.drawer-head{
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  border-radius:22px!important;
+  box-shadow:0 10px 25px rgba(36,89,214,.20);
+}
+.drawer-btn{
+  background:white!important;
+  color:var(--tak-navy)!important;
+  border:1px solid var(--tak-line)!important;
+  box-shadow:0 3px 12px rgba(15,23,42,.04);
+  border-radius:16px!important;
+  font-weight:800!important;
+}
+.drawer-btn.active{
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  color:white!important;
+  border-color:transparent!important;
+}
+.drawer-btn.logout{
+  background:#fff1f1!important;
+  color:#b91c1c!important;
+  border-color:#ffd4d4!important;
+}
+
+/* Sections / cards */
+.section{
+  background:rgba(255,255,255,.96)!important;
+  border:1px solid var(--tak-line)!important;
+  border-radius:24px!important;
+  padding:16px!important;
+  margin-top:14px!important;
+  box-shadow:var(--tak-shadow)!important;
+}
+.title{
+  color:var(--tak-navy)!important;
+  font-size:18px!important;
+  font-weight:900!important;
+  margin-bottom:14px!important;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.title:before{
+  content:"";
+  width:5px;
+  height:22px;
+  background:linear-gradient(180deg,var(--tak-blue),var(--tak-blue-3));
+  border-radius:99px;
+  margin-left:8px;
+  display:inline-block;
+}
+.small{
+  color:var(--tak-muted)!important;
+  font-size:12px!important;
+  line-height:1.9!important;
+}
+.card,
+.product-item,
+.case-card,
+.user-card,
+.material-row-clean{
+  background:white!important;
+  border:1px solid var(--tak-line)!important;
+  border-radius:20px!important;
+  box-shadow:var(--tak-shadow-soft)!important;
+}
+
+/* Inputs */
+label{
+  color:var(--tak-text)!important;
+  font-size:12px!important;
+  font-weight:900!important;
+}
+input,select{
+  background:#fbfdff!important;
+  border:1px solid #d9e3f5!important;
+  border-radius:15px!important;
+  color:#07183f!important;
+  font-weight:700;
+  min-height:46px;
+  transition:.18s ease;
+}
+input:focus,select:focus{
+  outline:none!important;
+  border-color:var(--tak-blue)!important;
+  box-shadow:0 0 0 4px rgba(36,89,214,.10)!important;
+}
+.readonly-field{
+  background:#f0f5ff!important;
+  color:#59677f!important;
+}
+
+/* Buttons */
+button{
+  border-radius:16px!important;
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  box-shadow:0 8px 20px rgba(36,89,214,.22)!important;
+  color:white!important;
+  font-weight:900!important;
+  min-height:46px;
+}
+button.gray{
+  background:#eef4ff!important;
+  color:var(--tak-blue-2)!important;
+  border:1px solid #d3e0fb!important;
+  box-shadow:none!important;
+}
+button.redbtn,.iconbtn{
+  background:#fff1f1!important;
+  color:#dc2626!important;
+  border:1px solid #ffd0d0!important;
+  box-shadow:none!important;
+}
+.printbtn{
+  background:linear-gradient(135deg,#17a45a,#0d8f49)!important;
+}
+
+/* Summary / KPI cards */
+.summary{
+  gap:12px!important;
+}
+.summary div{
+  background:white!important;
+  border:1px solid var(--tak-line)!important;
+  border-radius:22px!important;
+  padding:18px 10px!important;
+  box-shadow:var(--tak-shadow-soft)!important;
+}
+.summary div:nth-child(1){background:linear-gradient(180deg,#fff,#f6f9ff)!important}
+.summary b{
+  color:var(--tak-blue-2)!important;
+  font-size:25px!important;
+  font-weight:900!important;
+}
+
+/* Tables */
+.table-wrap{
+  border:1px solid var(--tak-line)!important;
+  border-radius:20px!important;
+  overflow:hidden!important;
+  box-shadow:var(--tak-shadow-soft)!important;
+}
+table{
+  font-size:10px!important;
+  background:white!important;
+}
+th{
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  color:white!important;
+  padding:9px 4px!important;
+  font-weight:900!important;
+}
+td{
+  border-color:#e5edf9!important;
+  padding:8px 4px!important;
+  color:#132143;
+}
+table tbody tr:nth-child(even):not(.family-head) td{background:#f7faff!important}
+table tbody tr:nth-child(odd):not(.family-head) td{background:#fff!important}
+tr.family-head td{
+  background:#eaf2ff!important;
+  color:var(--tak-blue-2)!important;
+}
+
+/* Price/material rows */
+.material-row-clean{
+  padding:12px!important;
+}
+.mat-title-input{
+  border:0!important;
+  background:#f4f8ff!important;
+  color:var(--tak-blue-2)!important;
+}
+.mat-saved{color:var(--tak-green)!important}
+
+/* Login */
+.login-screen{
+  background:linear-gradient(135deg,var(--tak-blue),#f4f8ff)!important;
+}
+.login-card{
+  border-radius:30px!important;
+  border:1px solid rgba(255,255,255,.65)!important;
+  box-shadow:0 25px 80px rgba(7,24,63,.22)!important;
+}
+.login-logo{
+  background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue-2))!important;
+  border-radius:24px!important;
+}
+
+/* Bottom mobile navigation feeling */
+@media(max-width:650px){
+  body{padding:0!important}
+  .app{padding:0 10px 94px!important}
+  .header{
+    padding:18px 16px!important;
+    border-radius:0 0 24px 24px!important;
+  }
+  .header h1{font-size:17px!important}
+  .header h1:before{font-size:24px}
+  .topbar{
+    top:66px;
+    border-radius:18px!important;
+    gap:6px!important;
+  }
+  .backup-actions{
+    background:#f4f8ff;
+    border-radius:16px;
+    padding:7px;
+  }
+  .grid,.summary{
+    grid-template-columns:1fr!important;
+  }
+  .section{
+    padding:14px!important;
+    border-radius:22px!important;
+  }
+  table{font-size:8px!important}
+  th,td{padding:7px 2px!important}
+  button{font-size:14px!important}
+  .drawer{
+    width:300px!important;
+    max-width:86vw!important;
+  }
+}
+
+/* Wider screens: make forms breathe */
+@media(min-width:900px){
+  .grid{
+    grid-template-columns:1fr 1fr!important;
+  }
+  #layers{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+  }
+  #layers .card{margin-top:0!important}
+}
+
+</style>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2459d6">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+</head><body>'+printable.replace(/<button[\s\S]*?<\/button>/g,'')+'
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('./service-worker.js').catch(function(){});
+  });
+}
+</script>
+
+</body></html>'); w.document.close(); w.print();}
 
 
 /* === TAK Backup / Restore stable v1 === */
@@ -2691,6 +3822,15 @@ function initTakBackupSystem(){
   setTimeout(renderTakBackupHint,300);
 }
 
+</script>
+
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('./service-worker.js').catch(function(){});
+  });
+}
 </script>
 
 </body>
