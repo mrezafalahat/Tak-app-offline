@@ -323,3 +323,33 @@ td{
     margin-top:0!important;
   }
 }
+
+
+/* Header centered fix */
+.header{
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:center!important;
+ justify-content:center!important;
+ text-align:center!important;
+}
+
+.header h1{
+ margin:0!important;
+ width:100%!important;
+ text-align:center!important;
+ font-size:22px!important;
+ color:white!important;
+}
+
+.header h1:before{
+ content:""!important;
+}
+
+.user-chip{
+ width:100%!important;
+ text-align:center!important;
+ margin-top:8px!important;
+ color:#dbe7ff!important;
+ font-size:13px!important;
+}
