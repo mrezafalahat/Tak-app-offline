@@ -37,3 +37,9 @@ button.redbtn,.iconbtn{background:#fff5f5!important;color:var(--tak-red)!importa
 .login-logo{background:linear-gradient(135deg,var(--tak-blue),var(--tak-blue2))!important;border-radius:22px!important}.login-card{border-radius:26px!important;box-shadow:0 22px 70px rgba(15,23,42,.16)!important}
 @media(max-width:650px){body{padding:0!important}.app{padding:0 10px 76px!important}.header{padding:15px 16px!important;border-radius:0 0 22px 22px!important}.header h1{font-size:20px!important}.topbar{gap:8px!important;padding:9px!important}.grid,.summary{grid-template-columns:1fr!important}.section{padding:14px!important;border-radius:21px!important}table{font-size:8px!important}button{font-size:14px!important}}
 @media(min-width:900px){#layers{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}#layers .card{margin-top:0!important}}
+
+
+/* offline password button polish */
+#tab_admin .section button.gray{
+  margin-top:10px!important;
+}

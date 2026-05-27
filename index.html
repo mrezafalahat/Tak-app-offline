@@ -437,6 +437,12 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 </div>
 
 <div class="section">
+<div class="title">رمز ورود آفلاین</div>
+<div class="small">رمز پیش‌فرض اولیه 1234 است. بعد از تغییر، رمز جدید فقط روی همین دستگاه ذخیره می‌شود.</div>
+<button type="button" class="gray" onclick="changeOfflinePassword()">تغییر رمز ورود آفلاین</button>
+</div>
+
+<div class="section">
 <div class="title">تنظیمات مدیر - سود و مازاد</div>
 <div class="grid">
 <div><label>مازاد روی قیمت همه مواد، درصد</label><input id="extraPercent" type="text" value="0" oninput="formatInput(this)"></div>
@@ -663,11 +669,43 @@ function requirePerm(key){
 }
 
 
+
+function getOfflineAdminPassword(){
+  return localStorage.getItem("tak_offline_admin_password") || "1234";
+}
+function setOfflineAdminPassword(newPass){
+  localStorage.setItem("tak_offline_admin_password", String(newPass || ""));
+}
+function changeOfflinePassword(){
+  var current = getOfflineAdminPassword();
+  var oldPass = prompt("رمز فعلی را وارد کن:");
+  if(oldPass === null)return;
+  if(String(oldPass) !== String(current)){
+    alert("رمز فعلی اشتباه است.");
+    return;
+  }
+  var newPass = prompt("رمز جدید را وارد کن:");
+  if(newPass === null)return;
+  newPass = String(newPass).trim();
+  if(newPass.length < 4){
+    alert("رمز جدید حداقل باید ۴ کاراکتر باشد.");
+    return;
+  }
+  var repeat = prompt("رمز جدید را دوباره وارد کن:");
+  if(repeat === null)return;
+  if(String(repeat).trim() !== newPass){
+    alert("تکرار رمز با رمز جدید یکسان نیست.");
+    return;
+  }
+  setOfflineAdminPassword(newPass);
+  alert("رمز ورود آفلاین با موفقیت تغییر کرد.");
+}
+
 function makeOfflineAdmin(){
   return {
     id:"local-admin",
     username:"admin",
-    password:"1234",
+    password:getOfflineAdminPassword(),
     full_name:"مدیر آفلاین",
     role:"admin",
     active:true,
@@ -700,12 +738,12 @@ async function loginApp(){
   if(err){err.style.display="none";err.textContent="";}
   if(!u || !p){showLoginError("نام کاربری و رمز را وارد کن");return false;}
 
-  if(u==="admin" && p==="1234"){
+  if(u==="admin" && p===getOfflineAdminPassword()){
     loginOfflineNow();
     return false;
   }
 
-  showLoginError("نام کاربری یا رمز اشتباه است. ورود آفلاین: admin / 1234");
+  showLoginError("نام کاربری یا رمز عبور اشتباه است.");
   setLoginStatus("اپلیکیشن کاملاً آفلاین است");
   return false;
 }
@@ -799,7 +837,7 @@ function getAdminPassword(){return "";}
 function isAdminUnlocked(){return true;}
 function unlockAdmin(){return true;}
 function lockAdmin(){alert("قفل داخلی مدیر حذف شده؛ دسترسی‌ها از بخش کاربران کنترل می‌شود.");}
-function changeAdminPassword(){alert("تغییر رمز از بخش تعریف کاربر و دسترسی انجام می‌شود.");}
+function changeAdminPassword(){changeOfflinePassword();}
 
 
 function openDrawer(){
