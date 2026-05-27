@@ -159,7 +159,7 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 
 </style>
 
-<link rel="stylesheet" href="tak-ui.css?v=icons1">
+<link rel="stylesheet" href="tak-ui.css?v=inline2">
 </head>
 
 <body onload="bootApp()">
@@ -199,15 +199,15 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 <div id="drawerBackdrop" class="drawer-backdrop" onclick="closeDrawer()"></div>
 <nav id="drawer" class="drawer no-print">
 <div class="drawer-head"><b>TAK Menu</b><span>ماشین حساب فروش</span></div>
-<button type="button" class="drawer-btn active" id="btn_home" onclick="showTab('home');closeDrawer()"><span class="menu-icon">⌂</span><span>صفحه اصلی</span></button>
-<button type="button" class="drawer-btn" id="btn_calc" onclick="showTab('calc');closeDrawer()"><img src="icons/calculator.svg" class="menu-ic"><span>محاسبه قیمت</span></button>
-<button type="button" class="drawer-btn" id="btn_products" onclick="showTab('products');closeDrawer()"><img src="icons/box.svg" class="menu-ic"><span>بانک محصولات</span></button>
-<button type="button" class="drawer-btn" id="btn_price_list" onclick="showTab('price_list');closeDrawer()"><img src="icons/file.svg" class="menu-ic"><span>خروجی لیست قیمت</span></button>
-<button type="button" class="drawer-btn" id="btn_free_calc" onclick="showTab('free_calc');closeDrawer()"><img src="icons/flask.svg" class="menu-ic"><span>محاسبه آزاد</span></button>
-<button type="button" class="drawer-btn" id="btn_prices" onclick="showTab('prices');closeDrawer()"><img src="icons/money.svg" class="menu-ic"><span>قیمت مواد</span></button>
-<button type="button" class="drawer-btn" id="btn_admin" onclick="showTab('admin');closeDrawer()"><img src="icons/settings.svg" class="menu-ic"><span>تنظیمات مدیر</span></button>
-<button type="button" class="drawer-btn" id="btn_users" onclick="showTab('users');closeDrawer()"><img src="icons/users.svg" class="menu-ic"><span>تعریف کاربر و دسترسی</span></button>
-<button type="button" class="drawer-btn logout" onclick="logoutApp();closeDrawer()"><img src="icons/logout.svg" class="menu-ic"><span>خروج از حساب</span></button>
+<button type="button" class="drawer-btn active" id="btn_home" onclick="showTab('home');closeDrawer()"><span class='menu-ic-inline'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 10.5 12 3l9 7.5'/><path d='M5 10v10h14V10'/><path d='M9 20v-6h6v6'/></svg></span><span>صفحه اصلی</span></button>
+<button type="button" class="drawer-btn" id="btn_calc" onclick="showTab('calc');closeDrawer()"><span class='menu-ic-inline'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><rect x='5' y='2.5' width='14' height='19' rx='2'/><path d='M8 6h8'/><path d='M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01'/></svg></span><span>محاسبه قیمت</span></button>
+<button type="button" class="drawer-btn" id="btn_products" onclick="showTab('products');closeDrawer()"><span class='menu-ic-inline'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 8l-9-5-9 5 9 5 9-5z'/><path d='M3 8v8l9 5 9-5V8'/><path d='M12 13v8'/></svg></span><span>بانک محصولات</span></button>
+<button type="button" class="drawer-btn" id="btn_price_list" onclick="showTab('price_list');closeDrawer()"><span class='menu-ic-inline'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/><path d='M14 2v6h6'/><path d='M8 13h8M8 17h6'/></svg></span><span>خروجی لیست قیمت</span></button>
+<button type="button" class="drawer-btn" id="btn_free_calc" onclick="showTab('free_calc');closeDrawer()"><span class='menu-ic-inline'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M10 2v6l-5.5 9A3.5 3.5 0 0 0 7.5 22h9a3.5 3.5 0 0 0 3-5L14 8V2'/><path d='M8 13h8'/></svg></span><span>محاسبه آزاد</span></button>
+<button type="button" class="drawer-btn" id="btn_prices" onclick="showTab('prices');closeDrawer()"><span class='menu-ic-inline'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='9'/><path d='M12 7v10'/><path d='M15 9.5c-.7-1-2-1.5-3-1.5-1.7 0-3 1-3 2.3 0 1.4 1.3 2 3 2.4 1.7.4 3 1 3 2.4 0 1.3-1.3 2.4-3 2.4-1.3 0-2.5-.5-3.3-1.5'/></svg></span><span>قیمت مواد</span></button>
+<button type="button" class="drawer-btn" id="btn_admin" onclick="showTab('admin');closeDrawer()"><span class='menu-ic-inline'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'/><path d='M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.4 1a7 7 0 0 0-1.7-1L14.5 3h-5l-.3 3a7 7 0 0 0-1.7 1l-2.4-1-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.4-1a7 7 0 0 0 1.7 1l.3 3h5l.3-3a7 7 0 0 0 1.7-1l2.4 1 2-3.4-2-1.5c.1-.3.1-.7.1-1z'/></svg></span><span>تنظیمات مدیر</span></button>
+<button type="button" class="drawer-btn" id="btn_users" onclick="showTab('users');closeDrawer()"><span class='menu-ic-inline'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/><circle cx='9' cy='7' r='4'/><path d='M22 21v-2a4 4 0 0 0-3-3.9'/><path d='M16 3.1a4 4 0 0 1 0 7.8'/></svg></span><span>تعریف کاربر و دسترسی</span></button>
+<button type="button" class="drawer-btn logout" onclick="logoutApp();closeDrawer()"><span class='menu-ic-inline'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4'/><path d='M16 17l5-5-5-5'/><path d='M21 12H9'/></svg></span><span>خروج از حساب</span></button>
 </nav>
 
 <div id="tab_home" class="tab-page">
@@ -351,7 +351,7 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 </div>
 <div class="grid">
 <button type="button" class="gray" onclick="loadFreeDefaultsFromMain()">پر کردن از تنظیمات فعلی</button>
-<button type="button" onclick="calculateFree()"><img src="icons/flask.svg" class="menu-ic"><span>محاسبه آزاد</span></button>
+<button type="button" onclick="calculateFree()"><span class='menu-ic-inline'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M10 2v6l-5.5 9A3.5 3.5 0 0 0 7.5 22h9a3.5 3.5 0 0 0 3-5L14 8V2'/><path d='M8 13h8'/></svg></span><span>محاسبه آزاد</span></button>
 </div>
 </div>
 <div id="freeResult"></div>
