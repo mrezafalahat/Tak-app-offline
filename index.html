@@ -378,6 +378,7 @@ tr.family-head td{background:#dbeafe!important;border-top:2px solid #93c5fd;bord
 <button type="button" class="printbtn requires-download" onclick="printSalesPriceList()">⬇️ دانلود فایل لیست فروش</button>
 <button type="button" class="gray requires-print" onclick="openSalesPriceList()">🖨️ نمایش / چاپ لیست</button>
 <button type="button" class="gray" onclick="refreshAllPrices()">🔄 بروزرسانی جدول</button>
+<button type="button" class="gray requires-download" onclick="exportSalesViewerFile()">📤 ساخت نسخه فروش</button>
 </div>
 
 <div class="familybox no-print">
@@ -1960,13 +1961,13 @@ for(var i=0;i<analysis.items.length;i++){
   var pct=(it.costKg/analysis.totalCostKg)*100;
   rows+='<tr><td>'+escapeHtml(it.name)+'</td><td>'+fmt(it.price)+'</td><td>'+fmt1(pct)+'%</td></tr>';
 }
-return '<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><title>آنالیز مواد اولیه</title>'+ 
-'<style>*{box-sizing:border-box}html,body{width:100%;max-width:100%;overflow-x:hidden}body{font-family:Tahoma,Arial,sans-serif;margin:0;padding:12px;color:#14213d;direction:rtl;background:#fff}.wrap{width:100%;max-width:760px;margin:0 auto}h1{font-size:18px;text-align:center;margin:8px 0 14px}.meta{border:1px solid #dbe3f0;border-radius:14px;padding:12px 14px;margin-bottom:14px;line-height:2;background:#f8fbff;text-align:right;font-size:14px}.tableBox{width:100%;overflow-x:hidden}table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}th{background:#1f5fd2;color:#fff;padding:9px 4px;border:1px solid #1f5fd2;line-height:1.6}td{padding:9px 4px;border:1px solid #dfe7f2;text-align:center;line-height:1.7;word-break:break-word;overflow-wrap:anywhere}tr:nth-child(even) td{background:#f7f9fc}.printBtn{display:block;margin:18px auto 0;padding:10px 26px;border:0;border-radius:10px;background:#1f5fd2;color:white;cursor:pointer;font-size:14px}@media screen and (max-width:600px){body{padding:10px}.wrap{max-width:100%}h1{font-size:16px}.meta{font-size:13px;padding:10px}table{font-size:12px}th,td{padding:8px 3px}.printBtn{width:100%;height:42px}}@media print{body{padding:0;margin:10mm}.wrap{max-width:100%}.printBtn{display:none}}</style></head><body><div class="wrap">'+ 
+return '<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><title>آنالیز مواد اولیه</title>'+ 
+'<style>*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}html,body{margin:0;padding:0;width:100%;min-width:0;overflow-x:hidden;background:#fff;color:#14213d;direction:rtl}body{font-family:Tahoma,Arial,sans-serif}.wrap{width:min(100% - 24px, 760px);max-width:760px;margin:12px auto}.printCard{width:100%;border:0;background:#fff}h1{font-size:18px;text-align:center;margin:8px 0 14px;font-weight:bold}.meta{border:1px solid #dbe3f0;border-radius:14px;padding:12px 14px;margin-bottom:14px;line-height:2;background:#f8fbff;text-align:right;font-size:14px}.tableBox{width:100%;overflow-x:hidden}table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}col.col-item{width:32%}col.col-price{width:34%}col.col-share{width:34%}th{background:#1f5fd2!important;color:#fff!important;padding:9px 4px;border:1px solid #1f5fd2;line-height:1.6;text-align:center}td{padding:9px 4px;border:1px solid #dfe7f2;text-align:center;line-height:1.7;word-break:break-word;overflow-wrap:anywhere}tr:nth-child(even) td{background:#f7f9fc}.printBtn{display:block;margin:18px auto 0;padding:11px 26px;border:0;border-radius:10px;background:#1f5fd2;color:white;cursor:pointer;font-size:14px;font-family:Tahoma,Arial,sans-serif}@media screen{.wrap{width:calc(100vw - 16px)!important;max-width:none!important;margin:8px auto!important}h1{font-size:16px}.meta{font-size:13px;padding:10px}table{font-size:12px}th,td{padding:8px 3px}.printBtn{width:100%;height:44px}}@media print{@page{size:A4;margin:10mm}html,body{width:100%;overflow:visible}body{margin:0;padding:0}.wrap{width:100%!important;max-width:none!important;margin:0!important}.printBtn{display:none!important}h1{font-size:16px;margin:0 0 10px}.meta{font-size:12px;margin-bottom:10px;padding:8px 10px}table{font-size:11px}th,td{padding:6px 3px}}</style></head><body><div class="wrap"><div class="printCard">'+ 
 '<h1>آنالیز سهم مواد اولیه در هزینه محصول</h1>'+ 
 '<div class="meta"><b>محصول:</b> '+escapeHtml(productName||'-')+'<br><b>تاریخ بروزرسانی:</b> '+escapeHtml(dateText||'-')+'<br><b>وزن ساختار:</b> '+fmt1(analysis.finalGsm)+' g/m²</div>'+ 
-'<div class="tableBox"><table><tr><th>آیتم</th><th>قیمت ماده اولیه</th><th>سهم در هزینه محصول</th></tr>'+rows+'</table></div>'+ 
-'<button class="printBtn" onclick="window.print()">چاپ</button>'+ 
-'</div></body></html>';
+'<div class="tableBox"><table><colgroup><col class="col-item"><col class="col-price"><col class="col-share"></colgroup><tr><th>آیتم</th><th>قیمت ماده اولیه</th><th>سهم در هزینه محصول</th></tr>'+rows+'</table></div>'+ 
+'<button class="printBtn" onclick="window.print()">چاپ / ذخیره PDF</button>'+ 
+'</div></div></body></html>';
 }
 
 function openMaterialAnalysisPrint(productName,data,dateText){
@@ -2184,6 +2185,66 @@ html+='<div class="small">برای ویرایش محصولات ذخیره‌شد
 html='<p class="small">محصولی ذخیره نشده یا نتیجه‌ای برای جستجو پیدا نشد.</p>';
 }
 document.getElementById("productList").innerHTML=html;
+}
+
+
+function buildMaterialAnalysisRowsForViewer(name,data,dateText,salePrice){
+var analysis=computeMaterialShareAnalysisFromData(data);
+if(!analysis)return null;
+var rows=[];
+for(var i=0;i<analysis.items.length;i++){
+  var it=analysis.items[i];
+  var pct=(it.costKg/analysis.totalCostKg)*100;
+  rows.push({item:it.name, price:fmt(it.price), share:fmt1(pct)+"%"});
+}
+return {name:name, date:dateText||"-", sale: salePrice?fmt(salePrice):"-", gsm:fmt1(analysis.finalGsm), rows:rows};
+}
+
+function exportSalesViewerFile(){
+if(currentUser && !hasPerm("download")){alert("دسترسی دانلود ندارید");return;}
+var list=[];
+var products=getProducts();
+Object.keys(products).sort().forEach(function(name){
+  var pr=products[name];
+  if(!pr || !pr.data)return;
+  var live=getLiveProductPrice(name);
+  var item=buildMaterialAnalysisRowsForViewer(name,pr.data,pr.date,live?live.sale:0);
+  if(item)list.push(item);
+});
+var families=getFamilies();
+Object.keys(families).sort(function(a,b){return (families[a].name||'').localeCompare(families[b].name||'')}).forEach(function(id){
+  var fam=families[id];
+  if(!fam || !fam.data)return;
+  for(var mic=fam.start; mic<=fam.end+0.0001; mic+=fam.step){
+    var data=JSON.parse(JSON.stringify(fam.data));
+    data["mic"+fam.varLayer]=String(mic);
+    var vname=buildVariantName(data,fam.varLayer,mic);
+    var live=computeLiveProductPriceFromData(data,fam.date);
+    var item=buildMaterialAnalysisRowsForViewer(vname,data,fam.date,live?live.sale:0);
+    if(item)list.push(item);
+  }
+});
+if(!list.length){alert("محصولی برای ساخت نسخه فروش پیدا نشد.");return;}
+var payload=JSON.stringify(list).replace(/</g,"\\u003c");
+var viewerScript = [
+'const DATA='+payload+';',
+'function esc(s){return String(s==null?"":s).replace(/[&<>\"]/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;","\\"":"&quot;"}[m]||m;});}',
+'function tableRows(p){return p.rows.map(function(r){return "<tr><td>"+esc(r.item)+"</td><td>"+esc(r.price)+"</td><td>"+esc(r.share)+"</td></tr>";}).join("");}',
+'function rowHtml(p,i){return "<div class=\\\"card\\\"><div class=\\\"cardHead\\\"><div><div class=\\\"name\\\">"+esc(p.name)+"</div><div class=\\\"meta\\\">تاریخ بروزرسانی: "+esc(p.date)+"<br>وزن ساختار: "+esc(p.gsm)+" g/m²</div></div><div class=\\\"price\\\">قیمت فروش/kg: "+esc(p.sale)+"</div></div><div class=\\\"btns\\\"><button class=\\\"btn\\\" onclick=\\\"toggle("+i+")\\\">نمایش آنالیز</button><button class=\\\"btn gray\\\" onclick=\\\"printOne("+i+")\\\">چاپ</button></div><div class=\\\"details\\\" id=\\\"d"+i+"\\\"><table><tr><th>آیتم</th><th>قیمت ماده اولیه</th><th>سهم در هزینه محصول</th></tr>"+tableRows(p)+"</table></div></div>";}',
+'function render(){var q=(document.getElementById("q").value||"").toLowerCase();var out="";DATA.forEach(function(p,i){if(!q || p.name.toLowerCase().indexOf(q)>-1){out+=rowHtml(p,i);}});document.getElementById("list").innerHTML=out||"<p>موردی پیدا نشد.</p>";}',
+'function toggle(i){var el=document.getElementById("d"+i);el.style.display=el.style.display==="block"?"none":"block";}',
+'function printOne(i){render();Array.prototype.forEach.call(document.querySelectorAll(".card"),function(c,idx){c.style.display=idx===i?"block":"none";});var el=document.getElementById("d"+i);if(el)el.style.display="block";window.print();setTimeout(render,300);}',
+'render();'
+].join('\n');
+var viewerCss='*{box-sizing:border-box}body{font-family:Tahoma,Arial,sans-serif;margin:0;background:#f4f7fb;color:#14213d;direction:rtl}.app{width:min(100% - 20px,980px);margin:14px auto}.header{background:#1f5fd2;color:white;border-radius:18px;padding:16px;text-align:center;box-shadow:0 8px 22px rgba(31,95,210,.18)}.header h1{margin:0;font-size:20px}.search{margin:14px 0;background:white;border:1px solid #dbe3f0;border-radius:14px;padding:10px}.search input{width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:11px;font-family:Tahoma;font-size:14px}.card{background:white;border:1px solid #dbe3f0;border-radius:16px;margin:12px 0;overflow:hidden;box-shadow:0 4px 14px rgba(15,23,42,.06)}.cardHead{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:12px 14px;background:#f8fbff}.name{font-weight:bold;font-size:15px}.meta{font-size:12px;color:#475569;line-height:1.9}.price{font-weight:bold;color:#1f5fd2;white-space:nowrap}.btns{display:flex;gap:8px;padding:0 14px 12px}.btn{border:0;border-radius:10px;background:#1f5fd2;color:white;padding:9px 12px;font-family:Tahoma;cursor:pointer}.btn.gray{background:#64748b}.details{display:none;padding:0 14px 14px}table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}th{background:#1f5fd2;color:white;border:1px solid #1f5fd2;padding:8px 4px}td{border:1px solid #dfe7f2;padding:8px 4px;text-align:center;word-break:break-word}tr:nth-child(even) td{background:#f7f9fc}@media(max-width:650px){.app{width:calc(100% - 12px);margin:8px auto}.header h1{font-size:17px}.cardHead{grid-template-columns:1fr}.price{font-size:14px}.btns{display:grid;grid-template-columns:1fr 1fr}table{font-size:11px}th,td{padding:7px 3px}}@media print{body{background:white}.search,.btns,.header{display:none}.app{width:100%;margin:0}.card{box-shadow:none;border:0}.details{display:block!important}.cardHead{border:1px solid #dbe3f0}.card{page-break-inside:avoid;margin-bottom:14px}}';
+var html='<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Tak Sales Viewer</title><style>'+viewerCss+'</style></head><body><div class="app"><div class="header"><h1>Tak Sales Viewer</h1><div>نسخه فقط مشاهده فروش</div></div><div class="search"><input id="q" placeholder="جستجوی محصول..." oninput="render()"></div><div id="list"></div></div><scr'+'ipt>'+viewerScript+'</scr'+'ipt></body></html>';
+var blob=new Blob([html],{type:"text/html;charset=utf-8"});
+var a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download="TakSalesViewer.html";
+document.body.appendChild(a);
+a.click();
+setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1000);
 }
 
 function getTodayText(){
