@@ -1876,6 +1876,129 @@ if(!pr || !pr.data)return null;
 return computeLiveProductPriceFromData(pr.data,pr.date);
 }
 
+
+function computeMaterialShareAnalysisFromData(data){
+var prices=getMasterMaterialPrices();
+var n=clean(data.layerCount||3);
+var filmGsm=0;
+var layers=[];
+for(var i=1;i<=n;i++){
+  var mat=data["mat"+i]||"PET";
+  var mic=clean(data["mic"+i]);
+  if(!mic)return null;
+  var gsm=mic*(density[mat]||1);
+  var price=prices[mat] ? prices[mat] : clean(data["price"+i]);
+  var waste=clean(data["waste"+i]);
+  filmGsm+=gsm;
+  layers.push({label:mat+fmt1(mic).replace(".00","").replace(".0",""),mat:mat,mic:mic,gsm:gsm,price:price,waste:waste});
+}
+var lamPass=Math.max(n-1,1);
+var glueDryPerLam=clean(getSettingValue("glueDryPerLam",data));
+var glueOriginalSolid=clean(getSettingValue("glueOriginalSolid",data))||75;
+var glueRatio=clean(getSettingValue("glueRatio",data))||1;
+var glueSolventRatio=clean(getSettingValue("glueSolventRatio",data))||0;
+var adhesiveDryGsm=glueDryPerLam*lamPass;
+var glueOriginalGsm=adhesiveDryGsm/(glueOriginalSolid/100);
+var solventAdhGsm=glueOriginalGsm*(glueSolventRatio/glueRatio);
+
+var inkDryInput=clean(getSettingValue("inkDryInput",data));
+var printAreaRaw=clean(getSettingValue("printArea",data));
+var printArea=isNaN(printAreaRaw) ? 100 : printAreaRaw;
+var inkOriginalSolid=clean(getSettingValue("inkOriginalSolid",data))||50;
+var inkRatio=clean(getSettingValue("inkRatio",data))||1;
+var inkSolventRatio=clean(getSettingValue("inkSolventRatio",data))||0;
+var inkDryGsm=inkDryInput*(printArea/100);
+var inkOriginalGsm=inkDryGsm/(inkOriginalSolid/100);
+var solventInkGsm=inkOriginalGsm*(inkSolventRatio/inkRatio);
+
+var finalGsm=filmGsm+adhesiveDryGsm+inkDryGsm;
+if(finalGsm<=0)return null;
+var gross=1000;
+var areaM2=gross*1000/finalGsm;
+var extraPercent=clean(getSettingValue("extraPercent",data));
+var adhPrice=addPercent(clean(getSettingValue("adhPrice",data)),extraPercent);
+var solventPrice=addPercent(clean(getSettingValue("solventPrice",data)),extraPercent);
+var inkPrice=addPercent(clean(getSettingValue("inkPrice",data)),extraPercent);
+
+var items=[];
+var materialCostKg=0;
+for(var j=0;j<layers.length;j++){
+  var y=layers[j];
+  var useKg=(areaM2*y.gsm/1000)*(1+y.waste/100);
+  var costKg=useKg*addPercent(y.price,extraPercent)/gross;
+  materialCostKg+=costKg;
+  items.push({name:y.label,price:addPercent(y.price,extraPercent),costKg:costKg});
+}
+
+var glueWaste=clean(getSettingValue("glueWaste",data));
+var solventAdhWaste=clean(getSettingValue("solventAdhWaste",data));
+var inkWaste=clean(getSettingValue("inkWaste",data));
+var solventInkWaste=clean(getSettingValue("solventInkWaste",data));
+var glueOriginalKg=(areaM2*glueOriginalGsm/1000)*(1+glueWaste/100);
+var solventAdhKg=(areaM2*solventAdhGsm/1000)*(1+solventAdhWaste/100);
+var inkOriginalKg=(areaM2*inkOriginalGsm/1000)*(1+inkWaste/100);
+var solventInkKg=(areaM2*solventInkGsm/1000)*(1+solventInkWaste/100);
+var adhesiveCostKg=glueOriginalKg*adhPrice/gross;
+var solventAdhCostKg=solventAdhKg*solventPrice/gross;
+var inkCostKg=inkOriginalKg*inkPrice/gross;
+var solventInkCostKg=solventInkKg*solventPrice/gross;
+var conversion=clean(getSettingValue("printCost",data))+clean(getSettingValue("lamCost",data))+clean(getSettingValue("cutCost",data))+clean(getSettingValue("overhead",data));
+var totalCostKg=materialCostKg+adhesiveCostKg+solventAdhCostKg+inkCostKg+solventInkCostKg+conversion;
+if(totalCostKg<=0)return null;
+items.push({name:"چسب",price:adhPrice,costKg:adhesiveCostKg});
+items.push({name:"مرکب",price:inkPrice,costKg:inkCostKg});
+items.push({name:"حلال",price:solventPrice,costKg:(solventAdhCostKg+solventInkCostKg)});
+return {items:items,totalCostKg:totalCostKg,finalGsm:finalGsm};
+}
+
+function buildMaterialAnalysisPrintHtml(productName,data,dateText){
+var analysis=computeMaterialShareAnalysisFromData(data);
+if(!analysis)return "";
+var rows="";
+for(var i=0;i<analysis.items.length;i++){
+  var it=analysis.items[i];
+  var pct=(it.costKg/analysis.totalCostKg)*100;
+  rows+='<tr><td>'+escapeHtml(it.name)+'</td><td>'+fmt(it.price)+'</td><td>'+fmt1(pct)+'%</td></tr>';
+}
+return '<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><title>آنالیز مواد اولیه</title>'+ 
+'<style>body{font-family:Tahoma,Arial,sans-serif;margin:28px;color:#14213d;direction:rtl}h1{font-size:22px;text-align:center;margin:0 0 18px}.meta{border:1px solid #dbe3f0;border-radius:14px;padding:12px 16px;margin-bottom:16px;line-height:2;background:#f8fbff}table{width:100%;border-collapse:collapse;font-size:14px}th{background:#1f5fd2;color:#fff;padding:10px;border:1px solid #1f5fd2}td{padding:10px;border:1px solid #dfe7f2;text-align:center}tr:nth-child(even) td{background:#f7f9fc}.note{margin-top:14px;font-size:12px;color:#52647a}@media print{button{display:none}body{margin:12mm}}</style></head><body>'+ 
+'<h1>آنالیز سهم مواد اولیه در هزینه محصول</h1>'+ 
+'<div class="meta"><b>محصول:</b> '+escapeHtml(productName||'-')+'<br><b>تاریخ بروزرسانی:</b> '+escapeHtml(dateText||'-')+'<br><b>وزن ساختار:</b> '+fmt1(analysis.finalGsm)+' g/m²</div>'+ 
+'<table><tr><th>آیتم</th><th>قیمت ماده اولیه</th><th>سهم در هزینه محصول</th></tr>'+rows+'</table>'+ 
+'<div class="note">در این گزارش قیمت تمام‌شده، قیمت فروش، سود و جمع ۱۰۰٪ نمایش داده نمی‌شود.</div>'+ 
+'<div style="text-align:center;margin-top:20px"><button onclick="window.print()" style="padding:10px 22px;border:0;border-radius:10px;background:#1f5fd2;color:white;cursor:pointer">چاپ</button></div>'+ 
+'</body></html>';
+}
+
+function openMaterialAnalysisPrint(productName,data,dateText){
+if(currentUser && !hasPerm("print")){alert("دسترسی چاپ ندارید");return;}
+var html=buildMaterialAnalysisPrintHtml(productName,data,dateText);
+if(!html){alert("امکان ساخت آنالیز برای این محصول وجود ندارد.");return;}
+var w=window.open("","_blank");
+if(!w){alert("پنجره چاپ باز نشد. Pop-up مرورگر را اجازه بده.");return;}
+w.document.open();
+w.document.write(html);
+w.document.close();
+setTimeout(function(){try{w.focus();}catch(e){}},200);
+}
+
+function printProductMaterialAnalysis(name){
+var products=getProducts();
+var pr=products[name];
+if(!pr || !pr.data){alert("محصول پیدا نشد");return;}
+openMaterialAnalysisPrint(name,pr.data,pr.date);
+}
+
+function printFamilyVariantMaterialAnalysis(id,mic){
+var families=getFamilies();
+var fam=families[id];
+if(!fam || !fam.data){alert("گروه پیدا نشد");return;}
+var data=JSON.parse(JSON.stringify(fam.data));
+data["mic"+fam.varLayer]=String(mic);
+var name=buildVariantName(data,fam.varLayer,mic);
+openMaterialAnalysisPrint(name,data,fam.date);
+}
+
 function getFamilies(){
 var raw=localStorage.getItem("tak_families");
 if(!raw)return {};
@@ -2022,6 +2145,7 @@ rows+='<tr onclick="editSavedProduct(\''+escapeName(name)+'\')" style="cursor:po
 rows+='<td>'+name+'</td>';
 rows+='<td><b>'+(live?fmt(live.sale):'-')+'</b></td>';
 rows+='<td>'+(products[name].date||'-')+'</td>';
+rows+='<td><button type="button" class="iconbtn" title="چاپ آنالیز مواد اولیه" onclick="event.stopPropagation();printProductMaterialAnalysis(\''+escapeName(name)+'\')">📊</button></td>';
 rows+='<td><button type="button" class="iconbtn" title="حذف" onclick="event.stopPropagation();deleteProduct(\''+escapeName(name)+'\')">🗑️</button></td>';
 rows+='</tr>';
 }
@@ -2042,20 +2166,21 @@ variantRows+='<tr class="variant-row" onclick="loadFamilyVariant(\''+id+'\','+mi
 variantRows+='<td>↳ '+vname+'</td>';
 variantRows+='<td><b>'+(live?fmt(live.sale):'-')+'</b></td>';
 variantRows+='<td>'+(fam.date||'-')+'</td>';
+variantRows+='<td><button type="button" class="iconbtn" title="چاپ آنالیز مواد اولیه" onclick="event.stopPropagation();printFamilyVariantMaterialAnalysis(\''+id+'\','+mic+')">📊</button></td>';
 variantRows+='<td></td>';
 variantRows+='</tr>';
 }
 if(variantRows){
-rows+='<tr class="family-head"><td colspan="3">گروه: '+fam.name+'</td><td><button type="button" class="iconbtn" title="حذف گروه" onclick="event.stopPropagation();deleteFamily(\''+id+'\')">🗑️</button></td></tr>';
+rows+='<tr class="family-head"><td colspan="4">گروه: '+fam.name+'</td><td><button type="button" class="iconbtn" title="حذف گروه" onclick="event.stopPropagation();deleteFamily(\''+id+'\')">🗑️</button></td></tr>';
 rows+=variantRows;
 }
 }
 var html='';
 if(rows){
 html+='<div class="table-wrap"><table>';
-html+='<tr><th>اسم محصول</th><th>قیمت فروش/kg</th><th>تاریخ بروزرسانی</th><th>حذف</th></tr>';
+html+='<tr><th>اسم محصول</th><th>قیمت فروش/kg</th><th>تاریخ بروزرسانی</th><th>آنالیز</th><th>حذف</th></tr>';
 html+=rows+'</table></div>';
-html+='<div class="small">برای ویرایش محصولات ذخیره‌شده روی ردیف محصول کلیک کنید. محصولات گروهی فقط یک‌بار ذخیره می‌شوند، اما در جدول و PDF همه ضخامت‌ها قیمت‌گذاری می‌شوند.</div>';
+html+='<div class="small">برای ویرایش محصولات ذخیره‌شده روی ردیف محصول کلیک کنید. دکمه 📊 فقط گزارش چاپی آنالیز مواد اولیه همان محصول را باز می‌کند.</div>';
 }else{
 html='<p class="small">محصولی ذخیره نشده یا نتیجه‌ای برای جستجو پیدا نشد.</p>';
 }
